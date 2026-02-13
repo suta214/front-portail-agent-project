@@ -1,0 +1,245 @@
+import { Injectable, PLATFORM_ID, inject } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { BehaviorSubject } from 'rxjs';
+
+const TRANSLATIONS: Record<string, Record<string, string>> = {
+  fr: {
+    'welcome': 'Bienvenue',
+    'overview': 'Aperçu de votre activité et accès rapide à vos services',
+    'search': 'Rechercher un client, une transaction...',
+    'agentBalance': 'Solde Agent',
+    'commissionBalance': 'Solde Commission',
+    'todayTx': "Transactions aujourd'hui",
+    'services': 'Services disponibles',
+    'cashIn': 'Cash In',
+    'cashInDesc': "Charger le wallet d'un client en espèces",
+    'cashOut': 'Cash Out',
+    'cashOutDesc': "Retrait d'espèces du wallet client",
+    'transfer': 'Transfert Assisté',
+    'transferDesc': 'Initier un transfert pour un client',
+    'billPay': 'Paiement Factures',
+    'billPayDesc': 'Payer les factures des clients',
+    'quickActions': 'Actions rapides',
+    'newClient': '+ Nouveau client',
+    'quickCashIn': '💰 Cash In rapide',
+    'viewOps': '📊 Voir mes opérations',
+    'myCommissions': '💵 Mes commissions',
+    'profileSettings': 'Paramètres du Profil',
+    'personalInfo': 'Informations Personnelles',
+    'fullName': 'Nom Complet',
+    'email': 'Email',
+    'phone': 'Téléphone',
+    'save': 'Sauvegarder',
+    'security': 'Sécurité',
+    'currentPwd': 'Mot de passe actuel',
+    'newPwd': 'Nouveau mot de passe',
+    'confirmPwd': 'Confirmer le mot de passe',
+    'changePwd': 'Changer le mot de passe',
+    'language': 'Langue',
+    'selectLang': 'Sélectionner la langue',
+    'applyLang': 'Appliquer la langue',
+    'otherSettings': 'Autres Paramètres',
+    'enableNotif': 'Activer les notifications',
+    'twoFactor': 'Authentification à deux facteurs',
+    'timezone': 'Fuseau horaire',
+    'saveSettings': 'Sauvegarder les paramètres',
+    'logout': 'Déconnexion',
+    'fillAll': 'Veuillez remplir tous les champs',
+    'pwdMismatch': 'Les mots de passe ne correspondent pas',
+    'pwdMin8': 'Le mot de passe doit contenir au moins 8 caractères',
+    'infoUpdated': 'Informations personnelles mises à jour',
+    'pwdChanged': 'Mot de passe changé avec succès',
+    'langApplied': 'Langue appliquée',
+    'settingsSaved': 'Paramètres sauvegardés',
+    'profileLoadErr': 'Impossible de charger le profil',
+    'updateErr': 'Erreur lors de la mise à jour',
+    'changeErr': 'Erreur lors du changement',
+    'error': 'Erreur',
+    'authorizedServices': 'Services autorisés',
+    'dashboard': 'Tableau de bord',
+    'assistedTransfer': 'Transfert assisté',
+    'billPayments': 'Paiement factures',
+    'management': 'Gestion',
+    'clientMgmt': 'Gestion clients',
+    'walletMgmt': 'Gestion wallets',
+    'history': 'Historique',
+    'settings': 'Paramètres',
+    'agentProfile': 'Profil agent',
+    'currency': 'Devise',
+    'selectCurrency': 'Sélectionner la devise',
+    'applyCurrency': 'Appliquer la devise',
+    'currencyApplied': 'Devise appliquée',
+  },
+  en: {
+    'welcome': 'Welcome',
+    'overview': 'Overview of your activity and quick access to your services',
+    'search': 'Search for a client, a transaction...',
+    'agentBalance': 'Agent Balance',
+    'commissionBalance': 'Commission Balance',
+    'todayTx': "Today's Transactions",
+    'services': 'Available Services',
+    'cashIn': 'Cash In',
+    'cashInDesc': "Load a client's wallet with cash",
+    'cashOut': 'Cash Out',
+    'cashOutDesc': 'Cash withdrawal from client wallet',
+    'transfer': 'Assisted Transfer',
+    'transferDesc': 'Initiate a transfer for a client',
+    'billPay': 'Bill Payments',
+    'billPayDesc': "Pay clients' bills",
+    'quickActions': 'Quick Actions',
+    'newClient': '+ New Client',
+    'quickCashIn': '💰 Quick Cash In',
+    'viewOps': '📊 View My Operations',
+    'myCommissions': '💵 My Commissions',
+    'profileSettings': 'Profile Settings',
+    'personalInfo': 'Personal Information',
+    'fullName': 'Full Name',
+    'email': 'Email',
+    'phone': 'Phone',
+    'save': 'Save',
+    'security': 'Security',
+    'currentPwd': 'Current Password',
+    'newPwd': 'New Password',
+    'confirmPwd': 'Confirm Password',
+    'changePwd': 'Change Password',
+    'language': 'Language',
+    'selectLang': 'Select Language',
+    'applyLang': 'Apply Language',
+    'otherSettings': 'Other Settings',
+    'enableNotif': 'Enable Notifications',
+    'twoFactor': 'Two-Factor Authentication',
+    'timezone': 'Timezone',
+    'saveSettings': 'Save Settings',
+    'logout': 'Logout',
+    'fillAll': 'Please fill in all fields',
+    'pwdMismatch': 'Passwords do not match',
+    'pwdMin8': 'Password must be at least 8 characters',
+    'infoUpdated': 'Personal information updated',
+    'pwdChanged': 'Password changed successfully',
+    'langApplied': 'Language applied',
+    'settingsSaved': 'Settings saved',
+    'profileLoadErr': 'Unable to load profile',
+    'updateErr': 'Error updating',
+    'changeErr': 'Error changing',
+    'error': 'Error',
+    'authorizedServices': 'Authorized Services',
+    'dashboard': 'Dashboard',
+    'assistedTransfer': 'Assisted Transfer',
+    'billPayments': 'Bill Payments',
+    'management': 'Management',
+    'clientMgmt': 'Client Management',
+    'walletMgmt': 'Wallet Management',
+    'history': 'History',
+    'settings': 'Settings',
+    'agentProfile': 'Agent Profile',
+    'currency': 'Currency',
+    'selectCurrency': 'Select currency',
+    'applyCurrency': 'Apply currency',
+    'currencyApplied': 'Currency applied',
+  },
+  ar: {
+    'welcome': 'مرحبا',
+    'overview': 'نظرة عامة على نشاطك والوصول السريع إلى خدماتك',
+    'search': 'ابحث عن عميل، معاملة...',
+    'agentBalance': 'رصيد الوكيل',
+    'commissionBalance': 'رصيد العمولة',
+    'todayTx': 'معاملات اليوم',
+    'services': 'الخدمات المتاحة',
+    'cashIn': 'إيداع نقدي',
+    'cashInDesc': 'شحن محفظة العميل نقدا',
+    'cashOut': 'سحب نقدي',
+    'cashOutDesc': 'سحب نقدي من محفظة العميل',
+    'transfer': 'تحويل مساعد',
+    'transferDesc': 'بدء تحويل لعميل',
+    'billPay': 'دفع الفواتير',
+    'billPayDesc': 'دفع فواتير العملاء',
+    'quickActions': 'إجراءات سريعة',
+    'newClient': '+ عميل جديد',
+    'quickCashIn': '💰 إيداع سريع',
+    'viewOps': '📊 عرض عملياتي',
+    'myCommissions': '💵 عمولاتي',
+    'profileSettings': 'إعدادات الملف الشخصي',
+    'personalInfo': 'المعلومات الشخصية',
+    'fullName': 'الاسم الكامل',
+    'email': 'البريد الإلكتروني',
+    'phone': 'الهاتف',
+    'save': 'حفظ',
+    'security': 'الأمان',
+    'currentPwd': 'كلمة المرور الحالية',
+    'newPwd': 'كلمة المرور الجديدة',
+    'confirmPwd': 'تأكيد كلمة المرور',
+    'changePwd': 'تغيير كلمة المرور',
+    'language': 'اللغة',
+    'selectLang': 'اختيار اللغة',
+    'applyLang': 'تطبيق اللغة',
+    'otherSettings': 'إعدادات أخرى',
+    'enableNotif': 'تفعيل الإشعارات',
+    'twoFactor': 'المصادقة الثنائية',
+    'timezone': 'المنطقة الزمنية',
+    'saveSettings': 'حفظ الإعدادات',
+    'logout': 'تسجيل الخروج',
+    'fillAll': 'يرجى ملء جميع الحقول',
+    'pwdMismatch': 'كلمات المرور غير متطابقة',
+    'pwdMin8': 'يجب أن تحتوي كلمة المرور على 8 أحرف على الأقل',
+    'infoUpdated': 'تم تحديث المعلومات الشخصية',
+    'pwdChanged': 'تم تغيير كلمة المرور بنجاح',
+    'langApplied': 'تم تطبيق اللغة',
+    'settingsSaved': 'تم حفظ الإعدادات',
+    'profileLoadErr': 'تعذر تحميل الملف الشخصي',
+    'updateErr': 'خطأ أثناء التحديث',
+    'changeErr': 'خطأ أثناء التغيير',
+    'error': 'خطأ',
+    'authorizedServices': 'الخدمات المرخصة',
+    'dashboard': 'لوحة القيادة',
+    'assistedTransfer': 'تحويل مساعد',
+    'billPayments': 'دفع الفواتير',
+    'management': 'الإدارة',
+    'clientMgmt': 'إدارة العملاء',
+    'walletMgmt': 'إدارة المحافظ',
+    'history': 'السجل',
+    'settings': 'الإعدادات',
+    'agentProfile': 'ملف الوكيل',
+    'currency': 'العملة',
+    'selectCurrency': 'اختيار العملة',
+    'applyCurrency': 'تطبيق العملة',
+    'currencyApplied': 'تم تطبيق العملة',
+  }
+};
+
+@Injectable({ providedIn: 'root' })
+export class TranslationService {
+  private isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  private langSubject = new BehaviorSubject<string>(this.getSavedLang());
+  private currencySubject = new BehaviorSubject<string>(this.getSavedCurrency());
+  lang$ = this.langSubject.asObservable();
+  currency$ = this.currencySubject.asObservable();
+
+  private getSavedLang(): string {
+    return this.isBrowser ? (localStorage.getItem('app_lang') || 'fr') : 'fr';
+  }
+
+  private getSavedCurrency(): string {
+    return this.isBrowser ? (localStorage.getItem('app_currency') || 'MAD') : 'MAD';
+  }
+
+  get currentLang(): string { return this.langSubject.value; }
+  get currentCurrency(): string { return this.currencySubject.value; }
+
+  setLang(lang: string) {
+    if (this.isBrowser) {
+      localStorage.setItem('app_lang', lang);
+      document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+      document.documentElement.lang = lang;
+    }
+    this.langSubject.next(lang);
+  }
+
+  setCurrency(currency: string) {
+    if (this.isBrowser) { localStorage.setItem('app_currency', currency); }
+    this.currencySubject.next(currency);
+  }
+
+  t(key: string): string {
+    return TRANSLATIONS[this.currentLang]?.[key] || TRANSLATIONS['fr'][key] || key;
+  }
+}

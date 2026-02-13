@@ -1,0 +1,122 @@
+<div class="layout" [style.direction]="ts.currentLang === 'ar' ? 'rtl' : 'ltr'">
+  <aside class="sidebar">
+    <div class="sidebar__brand">
+      <img src="hps logo blanc.png" alt="HPS" class="brand-logo" />
+      <span class="brand-divider"></span>
+      <span class="brand-label">Portail Agent</span>
+    </div>
+
+    <nav class="sidebar__nav">
+      <div class="sidebar-section">
+        <div class="sidebar-section__title">{{ ts.t('authorizedServices') }}</div>
+
+        <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">
+          <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="6" height="6" rx="1.5"/><rect x="11" y="3" width="6" height="6" rx="1.5"/><rect x="3" y="11" width="6" height="6" rx="1.5"/><rect x="11" y="11" width="6" height="6" rx="1.5"/></svg>
+          <span>{{ ts.t('dashboard') }}</span>
+        </a>
+
+        <a routerLink="/cash-in" routerLinkActive="active" class="nav-item">
+          <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7"/><path d="M10 6v8M7 10l3 3 3-3"/></svg>
+          <span>{{ ts.t('cashIn') }}</span>
+        </a>
+
+        <a routerLink="/cash-out" routerLinkActive="active" class="nav-item">
+          <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7"/><path d="M10 14V6M7 10l3-3 3 3"/></svg>
+          <span>{{ ts.t('cashOut') }}</span>
+        </a>
+
+        <a routerLink="/assisted-transfers" routerLinkActive="active" class="nav-item">
+          <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h12M12 4l4 4-4 4"/><path d="M16 12H4M8 16l-4-4 4-4"/></svg>
+          <span>{{ ts.t('assistedTransfer') }}</span>
+        </a>
+
+        <a routerLink="/bill-payments" routerLinkActive="active" class="nav-item">
+          <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h10a1 1 0 011 1v13l-2.5-1.5L11 17l-2.5-1.5L6 17l-2.5-1.5L4 4a1 1 0 011-1z"/><path d="M7 7h6M7 10h4"/></svg>
+          <span>{{ ts.t('billPayments') }}</span>
+        </a>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-section__title">{{ ts.t('management') }}</div>
+
+        <a routerLink="/clients" routerLinkActive="active" class="nav-item">
+          <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="6" r="3"/><path d="M2 17v-1a4 4 0 014-4h4a4 4 0 014 4v1"/><circle cx="15" cy="6" r="2"/><path d="M16 12h1a3 3 0 013 3v1"/></svg>
+          <span>{{ ts.t('clientMgmt') }}</span>
+        </a>
+
+        <a routerLink="/wallets" routerLinkActive="active" class="nav-item">
+          <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="16" height="12" rx="2"/><path d="M2 9h16"/><circle cx="14" cy="13" r="1.5"/></svg>
+          <span>{{ ts.t('walletMgmt') }}</span>
+        </a>
+
+        <a routerLink="/history" routerLinkActive="active" class="nav-item">
+          <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7"/><path d="M10 6v4l3 2"/></svg>
+          <span>{{ ts.t('history') }}</span>
+        </a>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-section__title">{{ ts.t('settings') }}</div>
+
+        <a routerLink="/profile" routerLinkActive="active" class="nav-item">
+          <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="2.5"/><path d="M10 2.5v2M10 15.5v2M17.5 10h-2M4.5 10h-2M15.3 4.7l-1.4 1.4M6.1 13.9l-1.4 1.4M15.3 15.3l-1.4-1.4M6.1 6.1L4.7 4.7"/></svg>
+          <span>{{ ts.t('agentProfile') }}</span>
+        </a>
+      </div>
+    </nav>
+
+    <div class="sidebar__footer">
+      <div class="sidebar-version">HPS Agent Portal v2.0</div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="header">
+      <div class="header__search">
+        <svg class="search-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="9" cy="9" r="5.5"/><path d="M13 13l3.5 3.5"/></svg>
+        <input type="text" [placeholder]="ts.t('search')" />
+      </div>
+
+      <div class="header__right">
+        <button class="header-icon-btn" type="button" aria-label="Notifications">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2a5 5 0 015 5c0 4 1.5 5 2 6H3c.5-1 2-2 2-6a5 5 0 015-5z"/><path d="M8.5 17a2 2 0 003 0"/></svg>
+          <span class="notif-dot"></span>
+        </button>
+
+        <div class="header__agent" (click)="toggleDropdown()">
+          <div class="agent-avatar">{{ initials }}</div>
+          <div class="agent-info">
+            <div class="agent-name">{{ agentName }}</div>
+            <div class="agent-id">{{ agentCode }}</div>
+          </div>
+          <svg class="dropdown-chevron" [class.open]="showDropdown" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6l4 4 4-4"/></svg>
+
+          @if (showDropdown) {
+            <div class="agent-dropdown" (click)="$event.stopPropagation()">
+              <div class="dropdown-header">
+                <div class="dropdown-avatar">{{ initials }}</div>
+                <div>
+                  <strong>{{ agentName }}</strong>
+                  <small>{{ agentCode }}</small>
+                </div>
+              </div>
+              <div class="dropdown-divider"></div>
+              <a routerLink="/profile" class="dropdown-item" (click)="showDropdown = false">
+                <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="9" cy="9" r="2"/><path d="M9 2v1.5M9 14.5V16M16 9h-1.5M3.5 9H2M13.9 4.1l-1 1M5.1 12.9l-1 1M13.9 13.9l-1-1M5.1 5.1l-1-1"/></svg>
+                {{ ts.t('agentProfile') }}
+              </a>
+              <button class="dropdown-item logout-btn" (click)="logout()">
+                <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15H4a1 1 0 01-1-1V4a1 1 0 011-1h2M12 12l3-3-3-3M7 9h8"/></svg>
+                {{ ts.t('logout') }}
+              </button>
+            </div>
+          }
+        </div>
+      </div>
+    </header>
+
+    <main class="content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>
