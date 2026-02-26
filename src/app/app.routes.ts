@@ -9,6 +9,11 @@ export const routes: Routes = [
       import('./features/auth/login.component').then((m) => m.LoginComponent),
   },
   {
+    path: 'auth/change-password',
+    loadComponent: () =>
+      import('./features/auth/force-change-password.component').then((m) => m.ForceChangePasswordComponent),
+  },
+  {
     path: '',
     component: MainLayoutComponent,
     canActivate: [authGuard],
@@ -55,9 +60,25 @@ export const routes: Routes = [
           import('./features/history/history.component').then((m) => m.HistoryComponent),
       },
       {
+        path: 'agents/create',
+        loadComponent: () =>
+          import('./features/agents/agent-creation.component').then((m) => m.AgentCreationComponent),
+      },
+      {
+        path: 'agents/create-bo',
+        loadComponent: () =>
+          import('./features/agents/bo-creation.component').then((m) => m.BoCreationComponent),
+      },
+      {
         path: 'profile',
         loadComponent: () =>
           import('./features/profile/agent-profile.component').then((m) => m.AgentProfileComponent),
+      },
+      {
+        path: 'admin/users',
+        loadComponent: () =>
+          import('./features/admin/user-management.component').then((m) => m.UserManagementComponent),
+        canActivate: [authGuard],
       },
     ],
   },

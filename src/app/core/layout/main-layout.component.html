@@ -1,68 +1,219 @@
 <div class="layout" [style.direction]="ts.currentLang === 'ar' ? 'rtl' : 'ltr'">
   <aside class="sidebar">
-    <div class="sidebar__brand">
+    <a routerLink="/dashboard" class="sidebar__brand">
       <img src="hps logo blanc.png" alt="HPS" class="brand-logo" />
       <span class="brand-divider"></span>
       <span class="brand-label">Portail Agent</span>
+    </a>
+
+    <!-- Agent Type Badge -->
+    <div class="agent-type-badge">
+      <svg class="badge-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M16 17v-1a4 4 0 00-4-4H8a4 4 0 00-4 4v1"/><circle cx="10" cy="7" r="3"/></svg>
+      <span class="badge-label">{{ ps.getLabel(ps.currentAgentType) }}</span>
     </div>
 
     <nav class="sidebar__nav">
-      <div class="sidebar-section">
-        <div class="sidebar-section__title">{{ ts.t('authorizedServices') }}</div>
 
-        <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">
-          <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="6" height="6" rx="1.5"/><rect x="11" y="3" width="6" height="6" rx="1.5"/><rect x="3" y="11" width="6" height="6" rx="1.5"/><rect x="11" y="11" width="6" height="6" rx="1.5"/></svg>
-          <span>{{ ts.t('dashboard') }}</span>
-        </a>
+      <!-- ═══ SIDEBAR ADMIN UNIQUEMENT ═══ -->
+      @if (ps.currentAgentType === 'ADMIN') {
+        <div class="sidebar-section">
+          <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="6" height="6" rx="1.5"/><rect x="11" y="3" width="6" height="6" rx="1.5"/><rect x="3" y="11" width="6" height="6" rx="1.5"/><rect x="11" y="11" width="6" height="6" rx="1.5"/></svg>
+            <span>{{ ts.t('dashboard') }}</span>
+          </a>
+        </div>
 
-        <a routerLink="/cash-in" routerLinkActive="active" class="nav-item">
-          <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7"/><path d="M10 6v8M7 10l3 3 3-3"/></svg>
-          <span>{{ ts.t('cashIn') }}</span>
-        </a>
+        <div class="sidebar-section">
+          <div class="sidebar-section__title">GESTION</div>
+          <a routerLink="/clients" routerLinkActive="active" class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="6" r="3"/><path d="M2 17v-1a4 4 0 014-4h4a4 4 0 014 4v1"/><circle cx="15" cy="6" r="2"/><path d="M16 12h1a3 3 0 013 3v1"/></svg>
+            <span>{{ ts.t('clientMgmt') }}</span>
+          </a>
+          <a routerLink="/wallets" routerLinkActive="active" class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="16" height="12" rx="2"/><path d="M2 9h16"/><circle cx="14" cy="13" r="1.5"/></svg>
+            <span>{{ ts.t('walletMgmt') }}</span>
+          </a>
+          <a routerLink="/admin/users" routerLinkActive="active" class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 17v-1a4 4 0 00-4-4H8a4 4 0 00-4 4v1"/><circle cx="8" cy="7" r="3"/><path d="M17 11v-1a3 3 0 00-3-3"/><path d="M15 3a3 3 0 010 6"/></svg>
+            <span>Gestion des utilisateurs</span>
+          </a>
+        </div>
 
-        <a routerLink="/cash-out" routerLinkActive="active" class="nav-item">
-          <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7"/><path d="M10 14V6M7 10l3-3 3 3"/></svg>
-          <span>{{ ts.t('cashOut') }}</span>
-        </a>
+        <div class="sidebar-section">
+          <div class="sidebar-section__title">ADMINISTRATION</div>
+          <a routerLink="/agents/create" routerLinkActive="active" class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 17v-1.5a3.5 3.5 0 00-3.5-3.5h-3A3.5 3.5 0 004 15.5V17"/><circle cx="8.5" cy="7" r="2.5"/><line x1="16" y1="8" x2="16" y2="14"/><line x1="13" y1="11" x2="19" y2="11"/></svg>
+            <span>{{ ts.t('agentCreation') }}</span>
+          </a>
+          <a routerLink="/agents/create-bo" routerLinkActive="active" class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="16" height="11" rx="2"/><line x1="7" y1="17" x2="13" y2="17"/><line x1="10" y1="14" x2="10" y2="17"/></svg>
+            <span>{{ ts.t('boCreation') }}</span>
+          </a>
+        </div>
 
-        <a routerLink="/assisted-transfers" routerLinkActive="active" class="nav-item">
-          <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h12M12 4l4 4-4 4"/><path d="M16 12H4M8 16l-4-4 4-4"/></svg>
-          <span>{{ ts.t('assistedTransfer') }}</span>
-        </a>
+        <div class="sidebar-section">
+          <div class="sidebar-section__title">{{ ts.t('settings') }}</div>
+          <a routerLink="/profile" routerLinkActive="active" class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="2.5"/><path d="M10 2.5v2M10 15.5v2M17.5 10h-2M4.5 10h-2M15.3 4.7l-1.4 1.4M6.1 13.9l-1.4 1.4M15.3 15.3l-1.4-1.4M6.1 6.1L4.7 4.7"/></svg>
+            <span>{{ ts.t('agentProfile') }}</span>
+          </a>
+        </div>
+      }
 
-        <a routerLink="/bill-payments" routerLinkActive="active" class="nav-item">
-          <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h10a1 1 0 011 1v13l-2.5-1.5L11 17l-2.5-1.5L6 17l-2.5-1.5L4 4a1 1 0 011-1z"/><path d="M7 7h6M7 10h4"/></svg>
-          <span>{{ ts.t('billPayments') }}</span>
-        </a>
-      </div>
+      <!-- ═══ SIDEBAR ALL : tous les menus ═══ -->
+      @if (ps.currentAgentType === 'ALL') {
+        <div class="sidebar-section">
+          <div class="sidebar-section__title">SERVICES AUTORISÉS</div>
+          <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="6" height="6" rx="1.5"/><rect x="11" y="3" width="6" height="6" rx="1.5"/><rect x="3" y="11" width="6" height="6" rx="1.5"/><rect x="11" y="11" width="6" height="6" rx="1.5"/></svg>
+            <span>{{ ts.t('dashboard') }}</span>
+          </a>
+          <a routerLink="/cash-in" routerLinkActive="active" class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7"/><path d="M10 6v8M7 10l3 3 3-3"/></svg>
+            <span>{{ ts.t('cashIn') }}</span>
+          </a>
+          <a routerLink="/cash-out" routerLinkActive="active" class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7"/><path d="M10 14V6M7 10l3-3 3 3"/></svg>
+            <span>{{ ts.t('cashOut') }}</span>
+          </a>
+          <a routerLink="/assisted-transfers" routerLinkActive="active" class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h12M12 4l4 4-4 4"/><path d="M16 12H4M8 16l-4-4 4-4"/></svg>
+            <span>{{ ts.t('assistedTransfer') }}</span>
+          </a>
+          <a routerLink="/bill-payments" routerLinkActive="active" class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h10a1 1 0 011 1v13l-2.5-1.5L11 17l-2.5-1.5L6 17l-2.5-1.5L4 4a1 1 0 011-1z"/><path d="M7 7h6M7 10h4"/></svg>
+            <span>{{ ts.t('billPayments') }}</span>
+          </a>
+        </div>
 
-      <div class="sidebar-section">
-        <div class="sidebar-section__title">{{ ts.t('management') }}</div>
+        <div class="sidebar-section">
+          <div class="sidebar-section__title">GESTION</div>
+          <a routerLink="/clients" routerLinkActive="active" class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="6" r="3"/><path d="M2 17v-1a4 4 0 014-4h4a4 4 0 014 4v1"/><circle cx="15" cy="6" r="2"/><path d="M16 12h1a3 3 0 013 3v1"/></svg>
+            <span>{{ ts.t('clientMgmt') }}</span>
+          </a>
+          <a routerLink="/wallets" routerLinkActive="active" class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="16" height="12" rx="2"/><path d="M2 9h16"/><circle cx="14" cy="13" r="1.5"/></svg>
+            <span>{{ ts.t('walletMgmt') }}</span>
+          </a>
+          <a routerLink="/history" routerLinkActive="active" class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7"/><path d="M10 6v4l3 2"/></svg>
+            <span>{{ ts.t('history') }}</span>
+          </a>
+          <a routerLink="/admin/users" routerLinkActive="active" class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 17v-1a4 4 0 00-4-4H8a4 4 0 00-4 4v1"/><circle cx="8" cy="7" r="3"/><path d="M17 11v-1a3 3 0 00-3-3"/><path d="M15 3a3 3 0 010 6"/></svg>
+            <span>Gestion des utilisateurs</span>
+          </a>
+        </div>
 
-        <a routerLink="/clients" routerLinkActive="active" class="nav-item">
-          <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="6" r="3"/><path d="M2 17v-1a4 4 0 014-4h4a4 4 0 014 4v1"/><circle cx="15" cy="6" r="2"/><path d="M16 12h1a3 3 0 013 3v1"/></svg>
-          <span>{{ ts.t('clientMgmt') }}</span>
-        </a>
+        <div class="sidebar-section">
+          <div class="sidebar-section__title">ADMINISTRATION</div>
+          <a routerLink="/agents/create" routerLinkActive="active" class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 17v-1.5a3.5 3.5 0 00-3.5-3.5h-3A3.5 3.5 0 004 15.5V17"/><circle cx="8.5" cy="7" r="2.5"/><line x1="16" y1="8" x2="16" y2="14"/><line x1="13" y1="11" x2="19" y2="11"/></svg>
+            <span>{{ ts.t('agentCreation') }}</span>
+          </a>
+          <a routerLink="/agents/create-bo" routerLinkActive="active" class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="16" height="11" rx="2"/><line x1="7" y1="17" x2="13" y2="17"/><line x1="10" y1="14" x2="10" y2="17"/></svg>
+            <span>{{ ts.t('boCreation') }}</span>
+          </a>
+        </div>
 
-        <a routerLink="/wallets" routerLinkActive="active" class="nav-item">
-          <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="16" height="12" rx="2"/><path d="M2 9h16"/><circle cx="14" cy="13" r="1.5"/></svg>
-          <span>{{ ts.t('walletMgmt') }}</span>
-        </a>
+        <div class="sidebar-section">
+          <div class="sidebar-section__title">{{ ts.t('settings') }}</div>
+          <a routerLink="/profile" routerLinkActive="active" class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="2.5"/><path d="M10 2.5v2M10 15.5v2M17.5 10h-2M4.5 10h-2M15.3 4.7l-1.4 1.4M6.1 13.9l-1.4 1.4M15.3 15.3l-1.4-1.4M6.1 6.1L4.7 4.7"/></svg>
+            <span>{{ ts.t('agentProfile') }}</span>
+          </a>
+        </div>
+      }
 
-        <a routerLink="/history" routerLinkActive="active" class="nav-item">
-          <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7"/><path d="M10 6v4l3 2"/></svg>
-          <span>{{ ts.t('history') }}</span>
-        </a>
-      </div>
+      <!-- ═══ SIDEBAR AUTRES TYPES (pas ADMIN, pas ALL) ═══ -->
+      @if (ps.currentAgentType !== 'ADMIN' && ps.currentAgentType !== 'ALL') {
+        <div class="sidebar-section">
+          <div class="sidebar-section__title">{{ ts.t('authorizedServices') }}</div>
 
-      <div class="sidebar-section">
-        <div class="sidebar-section__title">{{ ts.t('settings') }}</div>
+          <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="6" height="6" rx="1.5"/><rect x="11" y="3" width="6" height="6" rx="1.5"/><rect x="3" y="11" width="6" height="6" rx="1.5"/><rect x="11" y="11" width="6" height="6" rx="1.5"/></svg>
+            <span>{{ ts.t('dashboard') }}</span>
+          </a>
 
-        <a routerLink="/profile" routerLinkActive="active" class="nav-item">
-          <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="2.5"/><path d="M10 2.5v2M10 15.5v2M17.5 10h-2M4.5 10h-2M15.3 4.7l-1.4 1.4M6.1 13.9l-1.4 1.4M15.3 15.3l-1.4-1.4M6.1 6.1L4.7 4.7"/></svg>
-          <span>{{ ts.t('agentProfile') }}</span>
-        </a>
-      </div>
+          @if (has('CASH_IN')) {
+          <a routerLink="/cash-in" routerLinkActive="active" class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7"/><path d="M10 6v8M7 10l3 3 3-3"/></svg>
+            <span>{{ ts.t('cashIn') }}</span>
+          </a>
+          }
+
+          @if (has('CASH_OUT')) {
+          <a routerLink="/cash-out" routerLinkActive="active" class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7"/><path d="M10 14V6M7 10l3-3 3 3"/></svg>
+            <span>{{ ts.t('cashOut') }}</span>
+          </a>
+          }
+
+          @if (has('TRANSFER')) {
+          <a routerLink="/assisted-transfers" routerLinkActive="active" class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h12M12 4l4 4-4 4"/><path d="M16 12H4M8 16l-4-4 4-4"/></svg>
+            <span>{{ ts.t('assistedTransfer') }}</span>
+          </a>
+          }
+
+          @if (has('BILL_PAYMENT')) {
+          <a routerLink="/bill-payments" routerLinkActive="active" class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h10a1 1 0 011 1v13l-2.5-1.5L11 17l-2.5-1.5L6 17l-2.5-1.5L4 4a1 1 0 011-1z"/><path d="M7 7h6M7 10h4"/></svg>
+            <span>{{ ts.t('billPayments') }}</span>
+          </a>
+          }
+        </div>
+
+        <div class="sidebar-section">
+          <div class="sidebar-section__title">{{ ts.t('management') }}</div>
+
+          @if (has('CLIENT_MGMT')) {
+          <a routerLink="/clients" routerLinkActive="active" class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="6" r="3"/><path d="M2 17v-1a4 4 0 014-4h4a4 4 0 014 4v1"/><circle cx="15" cy="6" r="2"/><path d="M16 12h1a3 3 0 013 3v1"/></svg>
+            <span>{{ ts.t('clientMgmt') }}</span>
+          </a>
+          }
+
+          @if (has('WALLET_MGMT')) {
+          <a routerLink="/wallets" routerLinkActive="active" class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="16" height="12" rx="2"/><path d="M2 9h16"/><circle cx="14" cy="13" r="1.5"/></svg>
+            <span>{{ ts.t('walletMgmt') }}</span>
+          </a>
+          }
+
+          @if (has('HISTORY')) {
+          <a routerLink="/history" routerLinkActive="active" class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7"/><path d="M10 6v4l3 2"/></svg>
+            <span>{{ ts.t('history') }}</span>
+          </a>
+          }
+
+          @if (has('AGENT_MGMT')) {
+          <a routerLink="/agents/create" routerLinkActive="active" class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 17v-1.5a3.5 3.5 0 00-3.5-3.5h-3A3.5 3.5 0 004 15.5V17"/><circle cx="8.5" cy="7" r="2.5"/><line x1="16" y1="8" x2="16" y2="14"/><line x1="13" y1="11" x2="19" y2="11"/></svg>
+            <span>{{ ts.t('agentCreation') }}</span>
+          </a>
+          <a routerLink="/agents/create-bo" routerLinkActive="active" class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="16" height="11" rx="2"/><line x1="7" y1="17" x2="13" y2="17"/><line x1="10" y1="14" x2="10" y2="17"/></svg>
+            <span>{{ ts.t('boCreation') }}</span>
+          </a>
+          }
+        </div>
+
+        <div class="sidebar-section">
+          <div class="sidebar-section__title">{{ ts.t('settings') }}</div>
+
+          @if (has('PROFILE')) {
+          <a routerLink="/profile" routerLinkActive="active" class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="2.5"/><path d="M10 2.5v2M10 15.5v2M17.5 10h-2M4.5 10h-2M15.3 4.7l-1.4 1.4M6.1 13.9l-1.4 1.4M15.3 15.3l-1.4-1.4M6.1 6.1L4.7 4.7"/></svg>
+            <span>{{ ts.t('agentProfile') }}</span>
+          </a>
+          }
+        </div>
+      }
+
     </nav>
 
     <div class="sidebar__footer">
@@ -105,6 +256,7 @@
                 <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="9" cy="9" r="2"/><path d="M9 2v1.5M9 14.5V16M16 9h-1.5M3.5 9H2M13.9 4.1l-1 1M5.1 12.9l-1 1M13.9 13.9l-1-1M5.1 5.1l-1-1"/></svg>
                 {{ ts.t('agentProfile') }}
               </a>
+              <div class="dropdown-divider"></div>
               <button class="dropdown-item logout-btn" (click)="logout()">
                 <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15H4a1 1 0 01-1-1V4a1 1 0 011-1h2M12 12l3-3-3-3M7 9h8"/></svg>
                 {{ ts.t('logout') }}

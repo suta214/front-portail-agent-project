@@ -9,7 +9,14 @@ export interface LoginResponse {
   agentId: string;
   agentName: string;
   agentCode: string;
+  agentType: string;
+  privileges: string[];
+  mustChangePassword: boolean;
 }
+
+export type AgentType = 'ALL' | 'ADMIN' | 'BACK_OFFICE' | 'AGENT_PROPRE' | 'AGENT_MANDATE_PRINCIPAL' | 'AGENT_MANDATE_COMMERCANT' | 'AGENT_MANDATE_DETAILLANT';
+
+export type Privilege = 'CASH_IN' | 'CASH_OUT' | 'TRANSFER' | 'BILL_PAYMENT' | 'CLIENT_MGMT' | 'WALLET_MGMT' | 'HISTORY' | 'PROFILE' | 'AGENT_MGMT' | 'REPORTS';
 
 // ── Agent / Profile ───────────────────────────────────────────────────────────
 export interface AgentProfile {
@@ -88,13 +95,41 @@ export interface ClientSearchParams {
 }
 
 // ── Wallet ────────────────────────────────────────────────────────────────────
+export interface AdminUser {
+  id: number;
+  identifiant: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  idType: string;
+  idNumber: string;
+  commission: string;
+  rib: string;
+  status: 'ACTIVE' | 'INACTIVE' | 'LOCKED';
+  agentType: AgentType;
+  privileges: Privilege[];
+  contractType?: string;
+  contractDate?: string;
+  signatory?: string;
+  patentNumber?: string;
+  addressLine1?: string;
+  addressLine2?: string;
+  addressLine3?: string;
+  addressLine4?: string;
+  country?: string;
+  region?: string;
+  city?: string;
+  postalCode?: string;
+}
+
 export interface Wallet {
   id: number;
   walletId: string;
   ownerName: string;
   phone: string;
   email: string;
-  type: 'Personnel' | 'Marchand' | 'Agent';
+  type: 'Niveau 1' | 'Niveau 2' | 'Niveau 3';
   status: 'Actif' | 'Suspendu' | 'Fermé';
   balance: number;
   dailyLimit: number;
@@ -229,6 +264,51 @@ export interface PaginatedTransactions {
   totalPages: number;
 }
 
+// ── Agent Creation ───────────────────────────────────────────────────────────
+export interface AgentFeature {
+  key: string;
+  label: string;
+}
+
+export interface CreateAgentRequest {
+  identifiant: string;
+  commission: string;
+  firstName: string;
+  lastName: string;
+  agentType: string;
+  idType: string;
+  idNumber: string;
+  email: string;
+  emailConfirmation: string;
+  phone: string;
+  contractType: string;
+  patentNumber: string;
+  contractDate: string;
+  signatory: string;
+  addressLine1: string;
+  addressLine2: string;
+  addressLine3: string;
+  addressLine4: string;
+  country: string;
+  region: string;
+  city: string;
+  postalCode: string;
+  features: string[];
+}
+
+export interface CreatedAgent {
+  id: number;
+  identifiant: string;
+  firstName: string;
+  lastName: string;
+  agentType: string;
+  email: string;
+  phone: string;
+  status: string;
+  createdAt: string;
+  otpChannel?: 'EMAIL' | 'SMS';
+}
+
 // ── Dashboard Stats ───────────────────────────────────────────────────────────
 export interface DashboardStats {
   agentBalance: number;
@@ -236,4 +316,19 @@ export interface DashboardStats {
   todayTransactionsCount: number;
   agentName: string;
   agentCode: string;
+  // Transactions du jour (agents opérationnels)
+  todayCashInCount?: number;
+  todayCashInAmount?: number;
+  todayCashOutCount?: number;
+  todayCashOutAmount?: number;
+  todayTransfersCount?: number;
+  todayBillPaymentsCount?: number;
+  // Gestion (Back Office)
+  activeClients?: number;
+  totalWallets?: number;
+  pendingTransactions?: number;
+  // Admin global
+  totalAgents?: number;
+  totalVolume?: number;
+  globalBalance?: number;
 }

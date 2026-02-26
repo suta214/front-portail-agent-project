@@ -16,7 +16,7 @@ import { AuthService } from '../../core/services/auth.service';
         <div class="brand-gradient-bar"></div>
         <div class="brand-content">
           <div class="brand-logo">
-            <img src="logo_hps_0.png" alt="HPS" />
+            <img src="hps logo blanc.png" alt="HPS" />
           </div>
           <h1 class="brand-title">Portail Agent</h1>
           <p class="brand-tagline">
@@ -230,7 +230,6 @@ import { AuthService } from '../../core/services/auth.service';
       height: 48px;
       width: auto;
       display: block;
-      filter: brightness(0) invert(1);
     }
 
     .brand-title {

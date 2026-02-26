@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { TranslationService } from '../services/translation.service';
 import { AuthService } from '../services/auth.service';
+import { PrivilegeService } from '../services/privilege.service';
+import { Privilege } from '../models';
 
 @Component({
   selector: 'app-main-layout',
@@ -17,12 +19,16 @@ export class MainLayoutComponent implements OnInit {
   agentId = '';
   showDropdown = false;
 
-  constructor(public ts: TranslationService, private authService: AuthService) {}
+  constructor(
+    public ts: TranslationService,
+    private authService: AuthService,
+    public ps: PrivilegeService,
+  ) {}
 
   ngOnInit() {
     const info = this.authService.getAgentInfo();
     if (info) {
-      this.agentName = info.agentName || 'Agent';
+      this.agentName = info.agentId || 'Agent';
       this.agentCode = info.agentCode || 'AP-000';
       this.agentId = info.agentId || '';
     }
@@ -30,6 +36,14 @@ export class MainLayoutComponent implements OnInit {
 
   get initials(): string {
     return this.agentName.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase() || 'AP';
+  }
+
+  has(privilege: Privilege): boolean {
+    return this.ps.has(privilege);
+  }
+
+  isAdmin(): boolean {
+    return this.ps.isAdmin();
   }
 
   toggleDropdown() {

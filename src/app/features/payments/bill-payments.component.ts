@@ -49,51 +49,17 @@ import { Invoice } from '../../core/models';
         <div class="biller-grid">
           @for (b of billers; track b.key) {
             <button class="biller-card" [class.biller-selected]="selectedBiller?.key === b.key" (click)="selectBiller(b)">
-              <div class="biller-icon" [ngSwitch]="b.key">
-                <!-- ONEE - Electricity & Water -->
-                <svg *ngSwitchCase="'onee'" width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="24" cy="24" r="24" fill="#FFF7ED"/>
-                  <path d="M24 12L18 28H30L24 36" stroke="#F7941D" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                <!-- LYDEC - Water & Electricity Casablanca -->
-                <svg *ngSwitchCase="'lydec'" width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="24" cy="24" r="24" fill="#EFF6FF"/>
-                  <path d="M24 10C20 18 16 20 16 24C16 30 22 34 24 36C26 34 32 30 32 24C32 20 28 18 24 10Z" fill="#2563EB"/>
-                </svg>
-                <!-- Redal - Water & Sanitation Rabat -->
-                <svg *ngSwitchCase="'redal'" width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="24" cy="24" r="24" fill="#ECFDF5"/>
-                  <path d="M24 10C20 18 16 20 16 24C16 30 22 34 24 36C26 34 32 30 32 24C32 20 28 18 24 10Z" fill="#059669"/>
-                </svg>
-                <!-- Maroc Telecom -->
-                <svg *ngSwitchCase="'maroc-telecom'" width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="24" cy="24" r="24" fill="#F0F9FF"/>
-                  <path d="M14 30V26M19 30V22M24 30V18M29 30V22M34 30V26" stroke="#0284C7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                <!-- Orange Maroc -->
-                <svg *ngSwitchCase="'orange'" width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="24" cy="24" r="24" fill="#FFF7ED"/>
-                  <circle cx="24" cy="24" r="10" fill="#E8471B"/>
-                </svg>
-                <!-- Inwi -->
-                <svg *ngSwitchCase="'inwi'" width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="24" cy="24" r="24" fill="#FAF5FF"/>
-                  <path d="M16 32C18 24 20 20 24 20C28 20 30 24 32 32" stroke="#7C3AED" stroke-width="2.5" stroke-linecap="round"/>
-                  <circle cx="24" cy="15" r="2.5" fill="#7C3AED"/>
-                </svg>
-                <!-- Canal+ -->
-                <svg *ngSwitchCase="'canalplus'" width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="24" cy="24" r="24" fill="#F5F3FF"/>
-                  <rect x="14" y="16" width="20" height="14" rx="3" stroke="#6D28D9" stroke-width="2"/>
-                  <path d="M14 34H34" stroke="#6D28D9" stroke-width="2" stroke-linecap="round"/>
-                  <path d="M20 38H28" stroke="#6D28D9" stroke-width="2" stroke-linecap="round"/>
-                </svg>
-                <!-- Wafa Assurance -->
-                <svg *ngSwitchCase="'wafa'" width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="24" cy="24" r="24" fill="#ECFDF5"/>
-                  <path d="M24 12L30 16V24C30 30 24 34 24 34C24 34 18 30 18 24V16L24 12Z" fill="#059669"/>
-                </svg>
-                <div *ngSwitchDefault class="fallback-icon">{{ b.icon }}</div>
+              <div class="biller-icon">
+                @if (b.logoSrc) {
+                  <div class="biller-logo-wrap">
+                    <img [src]="b.logoSrc" [alt]="b.name" class="biller-logo-img" />
+                  </div>
+                } @else {
+                  <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="24" cy="24" r="24" fill="#EFF6FF"/>
+                    <path d="M24 10C20 18 16 20 16 24C16 30 22 34 24 36C26 34 32 30 32 24C32 20 28 18 24 10Z" fill="#2563EB"/>
+                  </svg>
+                }
               </div>
               <div class="biller-name">{{ b.name }}</div>
               <div class="biller-desc">{{ b.desc }}</div>
@@ -112,166 +78,126 @@ import { Invoice } from '../../core/models';
       <!-- Payment Form -->
       @if (selectedBiller) {
         <section class="payment-section">
-          <div class="payment-card">
-            <!-- Biller Header -->
-            <div class="payment-header">
-              <div class="payment-header-icon" [ngSwitch]="selectedBiller?.key">
-                <svg *ngSwitchCase="'onee'" width="40" height="40" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="24" cy="24" r="24" fill="#FFF7ED"/>
-                  <path d="M24 12L18 28H30L24 36" stroke="#F7941D" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                <svg *ngSwitchCase="'lydec'" width="40" height="40" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="24" cy="24" r="24" fill="#EFF6FF"/>
-                  <path d="M24 10C20 18 16 20 16 24C16 30 22 34 24 36C26 34 32 30 32 24C32 20 28 18 24 10Z" fill="#2563EB"/>
-                </svg>
-                <svg *ngSwitchCase="'redal'" width="40" height="40" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="24" cy="24" r="24" fill="#ECFDF5"/>
-                  <path d="M24 10C20 18 16 20 16 24C16 30 22 34 24 36C26 34 32 30 32 24C32 20 28 18 24 10Z" fill="#059669"/>
-                </svg>
-                <svg *ngSwitchCase="'maroc-telecom'" width="40" height="40" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="24" cy="24" r="24" fill="#F0F9FF"/>
-                  <path d="M14 30V26M19 30V22M24 30V18M29 30V22M34 30V26" stroke="#0284C7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                <svg *ngSwitchCase="'orange'" width="40" height="40" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="24" cy="24" r="24" fill="#FFF7ED"/>
-                  <circle cx="24" cy="24" r="10" fill="#E8471B"/>
-                </svg>
-                <svg *ngSwitchCase="'inwi'" width="40" height="40" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="24" cy="24" r="24" fill="#FAF5FF"/>
-                  <path d="M16 32C18 24 20 20 24 20C28 20 30 24 32 32" stroke="#7C3AED" stroke-width="2.5" stroke-linecap="round"/>
-                  <circle cx="24" cy="15" r="2.5" fill="#7C3AED"/>
-                </svg>
-                <svg *ngSwitchCase="'canalplus'" width="40" height="40" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="24" cy="24" r="24" fill="#F5F3FF"/>
-                  <rect x="14" y="16" width="20" height="14" rx="3" stroke="#6D28D9" stroke-width="2"/>
-                  <path d="M14 34H34" stroke="#6D28D9" stroke-width="2" stroke-linecap="round"/>
-                  <path d="M20 38H28" stroke="#6D28D9" stroke-width="2" stroke-linecap="round"/>
-                </svg>
-                <svg *ngSwitchCase="'wafa'" width="40" height="40" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="24" cy="24" r="24" fill="#ECFDF5"/>
-                  <path d="M24 12L30 16V24C30 30 24 34 24 34C24 34 18 30 18 24V16L24 12Z" fill="#059669"/>
-                </svg>
-              </div>
-              <div class="payment-header-text">
-                <h3>{{ selectedBiller.name }}</h3>
-                <span class="payment-header-desc">{{ selectedBiller.desc }}</span>
-              </div>
-            </div>
+          <div class="payment-columns">
 
-            <div class="divider"></div>
-
-            <!-- Form Fields -->
-            <div class="form-body">
-              <div class="form-row">
-                <div class="form-field">
-                  <label class="field-label">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" stroke="var(--text-muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    N. de telephone client
-                    <span class="required">*</span>
-                  </label>
-                  <input class="field-input" [(ngModel)]="customerRef" placeholder="+212 6XX XXX XXX" />
-                </div>
-                <div class="form-field">
-                  <label class="field-label">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke="var(--text-muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                      <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8" stroke="var(--text-muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    Numero de contrat / compteur
-                    <span class="required">*</span>
-                  </label>
-                  <input class="field-input" [(ngModel)]="contractNumber" placeholder="Ex: 123456789" />
-                </div>
-              </div>
-
-              <!-- Action Buttons -->
-              <div class="form-actions">
-                <button class="btn-primary" (click)="fetchInvoice()">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
-                    <path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                  </svg>
-                  Consulter la facture
-                </button>
-                <button class="btn-outlined" (click)="clearPayment()">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                  Effacer
-                </button>
-              </div>
-
-              <!-- Error Alert -->
-              @if (errorMsg) {
-                <div class="alert alert-error">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="12" cy="12" r="10" stroke="var(--error)" stroke-width="2"/>
-                    <path d="M15 9l-6 6M9 9l6 6" stroke="var(--error)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                  <span>{{ errorMsg }}</span>
-                </div>
-              }
-
-              <!-- Success Alert -->
-              @if (successMsg) {
-                <div class="alert alert-success">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="12" cy="12" r="10" stroke="var(--success)" stroke-width="2"/>
-                    <path d="M9 12l2 2 4-4" stroke="var(--success)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                  <span>{{ successMsg }}</span>
-                </div>
-              }
-
-              <!-- Invoice Result -->
-              @if (invoice) {
-                <div class="invoice-result">
-                  <div class="invoice-header">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" stroke="var(--hps-orange)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                      <rect x="9" y="3" width="6" height="4" rx="1" stroke="var(--hps-orange)" stroke-width="2"/>
-                    </svg>
-                    <h4>Facture trouvee</h4>
-                  </div>
-                  <div class="invoice-details">
-                    <div class="invoice-row">
-                      <div class="invoice-item">
-                        <span class="invoice-label">Reference</span>
-                        <span class="invoice-value">{{ invoice.invoiceId }}</span>
-                      </div>
-                      <div class="invoice-item">
-                        <span class="invoice-label">Periode</span>
-                        <span class="invoice-value">{{ invoice.period }}</span>
-                      </div>
-                      <div class="invoice-item">
-                        <span class="invoice-label">Montant du</span>
-                        <span class="invoice-value invoice-amount">{{ invoice.amount }} {{ ts.currentCurrency }}</span>
-                      </div>
-                      <div class="invoice-item">
-                        <span class="invoice-label">Echeance</span>
-                        <span class="invoice-value">{{ invoice.dueDate }}</span>
-                      </div>
+            <!-- Left: Form Card -->
+            <div class="payment-card">
+              <div class="payment-header">
+                <div class="payment-header-icon">
+                  @if (selectedBiller?.logoSrc) {
+                    <div class="payment-logo-wrap">
+                      <img [src]="selectedBiller.logoSrc" [alt]="selectedBiller.name" class="payment-logo-img" />
                     </div>
+                  } @else {
+                    <svg width="40" height="40" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <circle cx="24" cy="24" r="24" fill="#EFF6FF"/>
+                      <path d="M24 10C20 18 16 20 16 24C16 30 22 34 24 36C26 34 32 30 32 24C32 20 28 18 24 10Z" fill="#2563EB"/>
+                    </svg>
+                  }
+                </div>
+                <div class="payment-header-text">
+                  <h3>{{ selectedBiller.name }}</h3>
+                  <span class="payment-header-desc">{{ selectedBiller.desc }}</span>
+                </div>
+                <button class="btn-close-payment" (click)="clearPayment()" title="Fermer">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                </button>
+              </div>
+
+              <div class="divider"></div>
+
+              <div class="form-body">
+                <!-- Wallet Client -->
+                <div class="wallet-field">
+                  <label class="wallet-label">Wallet Client</label>
+                  <input class="wallet-input" [(ngModel)]="customerRef" placeholder="Numéro de wallet ou téléphone" />
+                </div>
+
+                <!-- Contract Number -->
+                <div class="wallet-field">
+                  <label class="wallet-label">Numéro de contrat / compteur</label>
+                  <input class="wallet-input" [(ngModel)]="contractNumber" placeholder="Ex: 123456789" />
+                </div>
+
+                @if (errorMsg) {
+                  <div class="alert alert-error">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="var(--error)" stroke-width="2"/><path d="M15 9l-6 6M9 9l6 6" stroke="var(--error)" stroke-width="2" stroke-linecap="round"/></svg>
+                    <span>{{ errorMsg }}</span>
                   </div>
-                  <div class="invoice-action">
-                    <button class="btn-pay" [disabled]="isLoading" (click)="payInvoice()">
+                }
+
+                <button class="btn-consult" [disabled]="isLoading" (click)="fetchInvoice()">
+                  @if (isLoading) {
+                    <span class="spinner"></span> Recherche...
+                  } @else {
+                    Consulter la Facture
+                  }
+                </button>
+
+                @if (successMsg) {
+                  <div class="alert alert-success">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="var(--success)" stroke-width="2"/><path d="M9 12l2 2 4-4" stroke="var(--success)" stroke-width="2" stroke-linecap="round"/></svg>
+                    <span>{{ successMsg }}</span>
+                  </div>
+                }
+
+                <!-- Purple Invoice Card -->
+                @if (invoice) {
+                  <div class="invoice-purple-card">
+                    <h4 class="ipc-title">Facture à Payer</h4>
+                    <div class="ipc-row">
+                      <span class="ipc-label">Facturier:</span>
+                      <span class="ipc-value">{{ selectedBiller.name }}</span>
+                    </div>
+                    <div class="ipc-row">
+                      <span class="ipc-label">Référence:</span>
+                      <span class="ipc-value">{{ invoice.invoiceId }}</span>
+                    </div>
+                    <div class="ipc-row">
+                      <span class="ipc-label">Période:</span>
+                      <span class="ipc-value">{{ invoice.period }}</span>
+                    </div>
+                    <div class="ipc-row">
+                      <span class="ipc-label">Echéance:</span>
+                      <span class="ipc-value">{{ invoice.dueDate }}</span>
+                    </div>
+                    <div class="ipc-divider"></div>
+                    <div class="ipc-row ipc-amount-row">
+                      <span class="ipc-label">Montant Total:</span>
+                      <span class="ipc-amount">{{ invoice.amount }} {{ ts.currentCurrency }}</span>
+                    </div>
+                    <button class="btn-confirm" [disabled]="isLoading" (click)="payInvoice()">
                       @if (isLoading) {
-                        <span class="spinner"></span>
-                        Traitement...
+                        <span class="spinner spinner-dark"></span> Traitement...
                       } @else {
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <rect x="1" y="4" width="22" height="16" rx="3" stroke="currentColor" stroke-width="2"/>
-                          <path d="M1 10h22" stroke="currentColor" stroke-width="2"/>
-                        </svg>
-                        Payer la facture
+                        Confirmer le Paiement
                       }
                     </button>
                   </div>
+                }
+              </div>
+            </div>
+
+            <!-- Right: Recent Payments -->
+            <div class="recent-card">
+              <h4 class="recent-title">Paiements Récents</h4>
+              @if (recentPayments.length === 0) {
+                <p class="recent-empty">Aucun paiement récent</p>
+              }
+              @for (p of recentPayments; track p.id) {
+                <div class="recent-item">
+                  <div class="recent-left">
+                    <div class="recent-dot"></div>
+                    <div class="recent-info">
+                      <span class="recent-name">{{ p.biller }}</span>
+                      <span class="recent-date">{{ p.date }}</span>
+                    </div>
+                  </div>
+                  <span class="recent-amount">{{ p.amount }} {{ ts.currentCurrency }}</span>
                 </div>
               }
             </div>
+
           </div>
         </section>
       }
@@ -404,6 +330,34 @@ import { Invoice } from '../../core/models';
       align-items: center;
       justify-content: center;
       font-size: 1.4rem;
+    }
+    .biller-logo-wrap {
+      width: 64px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .biller-logo-img {
+      max-width: 64px;
+      max-height: 44px;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+    }
+    .payment-logo-wrap {
+      width: 80px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .payment-logo-img {
+      max-width: 80px;
+      max-height: 44px;
+      width: auto;
+      height: auto;
+      object-fit: contain;
     }
 
     /* ---- Payment Section ---- */
@@ -648,31 +602,203 @@ import { Invoice } from '../../core/models';
       to { transform: rotate(360deg); }
     }
 
+    /* ---- New Payment Layout ---- */
+    .payment-columns {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 20px;
+      align-items: start;
+    }
+
+    /* Close button in header */
+    .btn-close-payment {
+      margin-left: auto;
+      width: 32px; height: 32px;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      background: var(--bg-input);
+      color: var(--text-muted);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; flex-shrink: 0;
+      transition: var(--transition-fast);
+    }
+    .btn-close-payment:hover { background: var(--error-bg); color: var(--error); border-color: var(--error); }
+
+    /* Wallet fields */
+    .wallet-field { margin-bottom: 16px; }
+    .wallet-label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+    .wallet-input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1.5px solid var(--border-light);
+      border-radius: var(--radius-md);
+      background: var(--bg-input);
+      font-size: 0.925rem;
+      color: var(--text-primary);
+      font-family: inherit;
+      outline: none;
+      box-sizing: border-box;
+      transition: var(--transition-fast);
+    }
+    .wallet-input:focus {
+      border-color: var(--hps-orange);
+      box-shadow: 0 0 0 3px rgba(232,71,27,0.1);
+      background: var(--bg-card);
+    }
+    .wallet-input::placeholder { color: var(--text-muted); }
+
+    /* Consulter button */
+    .btn-consult {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: var(--radius-md);
+      background: #2563EB;
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: var(--transition-fast);
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      margin-top: 8px;
+    }
+    .btn-consult:hover:not(:disabled) { background: #1D4ED8; box-shadow: 0 4px 14px rgba(37,99,235,0.35); }
+    .btn-consult:disabled { opacity: 0.55; cursor: not-allowed; }
+
+    /* Invoice Card */
+    .invoice-purple-card {
+      margin-top: 20px;
+      background: linear-gradient(135deg, #7C3AED 0%, #9333EA 100%);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      color: #fff;
+    }
+    .ipc-title {
+      margin: 0 0 20px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #fff;
+    }
+    .ipc-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+    }
+    .ipc-label {
+      font-size: 0.875rem;
+      color: rgba(255,255,255,0.7);
+    }
+    .ipc-value {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #fff;
+    }
+    .ipc-divider {
+      height: 1px;
+      background: rgba(255,255,255,0.2);
+      margin: 12px 0;
+    }
+    .ipc-amount-row { padding: 4px 0; }
+    .ipc-amount {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #fff;
+    }
+    .btn-confirm {
+      width: 100%;
+      margin-top: 20px;
+      padding: 14px;
+      border: 2px solid rgba(255,255,255,0.8);
+      border-radius: var(--radius-md);
+      background: rgba(255,255,255,0.12);
+      color: #fff;
+      font-size: 0.975rem;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      transition: var(--transition-fast);
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn-confirm:hover:not(:disabled) { background: rgba(255,255,255,0.25); }
+    .btn-confirm:disabled { opacity: 0.5; cursor: not-allowed; }
+    .spinner-dark {
+      display: inline-block;
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    /* Recent Payments Card */
+    .recent-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+    }
+    .recent-title {
+      margin: 0 0 20px;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    .recent-empty {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      text-align: center;
+      padding: 16px 0;
+    }
+    .recent-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border-light);
+    }
+    .recent-item:last-child { border-bottom: none; }
+    .recent-left { display: flex; align-items: center; gap: 12px; }
+    .recent-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--hps-gradient);
+      flex-shrink: 0;
+    }
+    .recent-info { display: flex; flex-direction: column; gap: 2px; }
+    .recent-name { font-size: 0.9rem; font-weight: 600; color: var(--text-primary); }
+    .recent-date { font-size: 0.78rem; color: var(--text-muted); }
+    .recent-amount { font-size: 0.95rem; font-weight: 700; color: var(--text-primary); }
+
     /* ---- Responsive ---- */
     @media (max-width: 1000px) {
       .biller-grid { grid-template-columns: repeat(2, 1fr); }
-      .form-row { grid-template-columns: 1fr; }
-      .invoice-row { grid-template-columns: repeat(2, 1fr); }
+      .payment-columns { grid-template-columns: 1fr; }
     }
     @media (max-width: 600px) {
       :host { padding: 16px; }
       .biller-grid { grid-template-columns: 1fr; }
-      .invoice-row { grid-template-columns: 1fr; }
-      .form-actions { flex-direction: column; }
     }
     `
   ]
 })
 export class BillPaymentsComponent {
   billers = [
-    { key: 'onee', name: 'ONEE', desc: "Electricite & Eau", icon: '⚡' },
-    { key: 'lydec', name: 'LYDEC', desc: 'Eau & Electricite (Casablanca)', icon: '💧' },
-    { key: 'redal', name: 'Redal', desc: 'Eau & Assainissement (Rabat)', icon: '💧' },
-    { key: 'maroc-telecom', name: 'Maroc Telecom', desc: 'Telecommunications', icon: '📶' },
-    { key: 'orange', name: 'Orange Maroc', desc: 'Telephonie mobile', icon: '🟠' },
-    { key: 'inwi', name: 'Inwi', desc: 'Telecommunications', icon: '📡' },
-    { key: 'canalplus', name: 'Canal+', desc: 'Television', icon: '📺' },
-    { key: 'wafa', name: 'Wafa Assurance', desc: "Assurances", icon: '🛡️' }
+    { key: 'onee', name: 'ONEE', desc: "Electricite & Eau", icon: '⚡', logoSrc: 'ONEE-LOGO.png' },
+    { key: 'srm', name: 'SRM', desc: 'Eau & Electricite (Casablanca)', icon: '💧', logoSrc: '' },
+    { key: 'oncf', name: 'ONCF', desc: 'Transport ferroviaire', icon: '🚆', logoSrc: 'oncf-logo-png.png' },
+    { key: 'maroc-telecom', name: 'Maroc Telecom', desc: 'Telecommunications', icon: '📶', logoSrc: 'Nouveau-logo-de-Maroc-Telecom.png' },
+    { key: 'orange', name: 'Orange Maroc', desc: 'Telephonie mobile', icon: '🟠', logoSrc: 'Orange_Morocco-Logo.wine.png' },
+    { key: 'inwi', name: 'Inwi', desc: 'Telecommunications', icon: '📡', logoSrc: 'inwi-logo-png_seeklogo-215192.png' },
+    { key: 'canalplus', name: 'Canal+', desc: 'Television', icon: '📺', logoSrc: 'canal logo.png' },
+    { key: 'netflix', name: 'Netflix', desc: 'Streaming video', icon: '🎬', logoSrc: 'netflix-logo.png' }
   ];
 
   selectedBiller: any = null;
@@ -683,6 +809,12 @@ export class BillPaymentsComponent {
   isLoading = false;
   errorMsg = '';
   successMsg = '';
+
+  recentPayments: { id: number; biller: string; date: string; amount: number }[] = [
+    { id: 1, biller: 'Maroc Telecom', date: "Aujourd'hui", amount: 200 },
+    { id: 2, biller: 'ONEE',          date: 'Hier',        amount: 320 },
+    { id: 3, biller: 'Inwi',          date: '22 Jan',      amount: 150 },
+  ];
 
   constructor(private billPaymentService: BillPaymentService, public ts: TranslationService) {}
 
@@ -717,6 +849,12 @@ export class BillPaymentsComponent {
       next: (res) => {
         this.isLoading = false;
         this.successMsg = `Paiement valide — Ref: ${res.transactionId}`;
+        this.recentPayments.unshift({
+          id: Date.now(),
+          biller: this.selectedBiller.name,
+          date: "Aujourd'hui",
+          amount: this.invoice!.amount
+        });
         this.invoice = null;
         this.selectedBiller = null;
       },

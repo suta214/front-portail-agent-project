@@ -69,6 +69,8 @@ const TRANSLATIONS: Record<string, Record<string, string>> = {
     'selectCurrency': 'Sélectionner la devise',
     'applyCurrency': 'Appliquer la devise',
     'currencyApplied': 'Devise appliquée',
+    'agentCreation': 'Création agent',
+    'boCreation': 'Création BO',
   },
   en: {
     'welcome': 'Welcome',
@@ -136,6 +138,8 @@ const TRANSLATIONS: Record<string, Record<string, string>> = {
     'selectCurrency': 'Select currency',
     'applyCurrency': 'Apply currency',
     'currencyApplied': 'Currency applied',
+    'agentCreation': 'Agent Creation',
+    'boCreation': 'Create BO User',
   },
   ar: {
     'welcome': 'مرحبا',
@@ -203,6 +207,8 @@ const TRANSLATIONS: Record<string, Record<string, string>> = {
     'selectCurrency': 'اختيار العملة',
     'applyCurrency': 'تطبيق العملة',
     'currencyApplied': 'تم تطبيق العملة',
+    'agentCreation': 'إنشاء وكيل',
+    'boCreation': 'إنشاء مستخدم BO',
   }
 };
 

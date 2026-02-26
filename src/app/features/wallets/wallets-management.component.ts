@@ -64,9 +64,9 @@ import { TranslationService } from '../../core/services/translation.service';
           </svg>
           <select [(ngModel)]="typeFilter">
             <option value="all">Tous les types</option>
-            <option value="personal">Personnel</option>
-            <option value="merchant">Marchand</option>
-            <option value="agent">Agent</option>
+            <option value="Niveau 1">Niveau 1</option>
+            <option value="Niveau 2">Niveau 2</option>
+            <option value="Niveau 3">Niveau 3</option>
           </select>
         </div>
       </section>
@@ -98,32 +98,32 @@ import { TranslationService } from '../../core/services/translation.service';
           <div class="wallet-card">
             <div class="card-left">
               <div class="avatar" [ngClass]="{
-                'avatar-personal': wallet.type === 'personal',
-                'avatar-merchant': wallet.type === 'merchant',
-                'avatar-agent': wallet.type === 'agent'
+                'avatar-personal': wallet.type === 'Niveau 1',
+                'avatar-merchant': wallet.type === 'Niveau 2',
+                'avatar-agent': wallet.type === 'Niveau 3'
               }">
-                <!-- Personal user icon -->
-                @if (wallet.type === 'personal') {
+                <!-- Niveau 1 user icon -->
+                @if (wallet.type === 'Niveau 1') {
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
                     <circle cx="12" cy="7" r="4"/>
                   </svg>
                 }
-                <!-- Merchant store icon -->
-                @if (wallet.type === 'merchant') {
+                <!-- Niveau 2 store icon -->
+                @if (wallet.type === 'Niveau 2') {
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
                     <polyline points="9 22 9 12 15 12 15 22"/>
                   </svg>
                 }
-                <!-- Agent briefcase icon -->
-                @if (wallet.type === 'agent') {
+                <!-- Niveau 3 briefcase icon -->
+                @if (wallet.type === 'Niveau 3') {
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
                     <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
                   </svg>
                 }
-                @if (wallet.type !== 'personal' && wallet.type !== 'merchant' && wallet.type !== 'agent') {
+                @if (wallet.type !== 'Niveau 1' && wallet.type !== 'Niveau 2' && wallet.type !== 'Niveau 3') {
                   {{ wallet.ownerInitials }}
                 }
               </div>
@@ -274,9 +274,9 @@ import { TranslationService } from '../../core/services/translation.service';
                   <div class="form-field">
                     <label>Type de wallet <span class="required">*</span></label>
                     <select [(ngModel)]="newWalletForm.type">
-                      <option value="personal">Personnel</option>
-                      <option value="merchant">Marchand</option>
-                      <option value="agent">Agent</option>
+                      <option value="Niveau 1">Niveau 1</option>
+                      <option value="Niveau 2">Niveau 2</option>
+                      <option value="Niveau 3">Niveau 3</option>
                     </select>
                   </div>
                   <div class="form-field">
@@ -1145,7 +1145,7 @@ import { TranslationService } from '../../core/services/translation.service';
 export class WalletsManagementComponent implements OnInit {
   searchQuery = '';
   statusFilter: 'all' | 'active' | 'suspended' | 'closed' = 'all';
-  typeFilter: 'all' | 'personal' | 'merchant' | 'agent' = 'all';
+  typeFilter: 'all' | 'Niveau 1' | 'Niveau 2' | 'Niveau 3' = 'all';
 
   createWalletOpen = false;
   manageWalletOpen = false;
@@ -1153,7 +1153,7 @@ export class WalletsManagementComponent implements OnInit {
   selectedWallet: any = null;
   wallets: any[] = [];
 
-  newWalletForm: any = { ownerName:'', phone:'', email:'', type:'personal', dailyLimit:5000, monthlyLimit:50000, currency:'MAD', kycVerified:false };
+  newWalletForm: any = { ownerName:'', phone:'', email:'', type:'Niveau 1', dailyLimit:5000, monthlyLimit:50000, currency:'MAD', kycVerified:false };
   walletFee = 0;
   walletNotes = '';
   walletActionType = '';
@@ -1184,7 +1184,7 @@ export class WalletsManagementComponent implements OnInit {
   }
 
   labelStatus(s: string) { return ({ active:'Actif', suspended:'Suspendu', closed:'Ferme' } as any)[s] || s; }
-  labelType(t: string) { return ({ personal:'Personnel', merchant:'Marchand', agent:'Agent' } as any)[t] || t; }
+  labelType(t: string) { return t; }
 
   openCreateWallet() { this.createWalletOpen = true; this.errorMessage = ''; this.successMessage = ''; }
   closeCreateWallet() {

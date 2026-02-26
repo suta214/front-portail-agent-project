@@ -1,10 +1,98 @@
 import { HttpInterceptorFn, HttpResponse } from '@angular/common/http';
-import { delay, of } from 'rxjs';
+import { delay, of, throwError } from 'rxjs';
 import {
   Client, Wallet, Account, Transaction, Invoice,
-  PaginatedTransactions, DashboardStats, AgentProfile,
-  TransactionResponse, BeneficiaryVerification, LoginResponse
+  DashboardStats, AgentProfile,
+  TransactionResponse, BeneficiaryVerification, LoginResponse,
+  CreatedAgent, AgentType, Privilege
 } from '../models';
+
+// ── Agent Credentials & Privileges ───────────────────────────────────────────
+
+interface MockAgent {
+  password: string;
+  agentId: string;
+  agentName: string;
+  agentCode: string;
+  agentType: AgentType;
+  privileges: Privilege[];
+  mustChangePassword: boolean;
+}
+
+const MOCK_AGENTS: Record<string, MockAgent> = {
+  ADMIN001: {
+    password: 'admin123',
+    agentId: 'ADMIN001',
+    agentName: 'Admin HPS',
+    agentCode: 'HPS-ADMIN-001',
+    agentType: 'ADMIN',
+    privileges: ['CASH_IN', 'CASH_OUT', 'TRANSFER', 'BILL_PAYMENT', 'CLIENT_MGMT', 'WALLET_MGMT', 'HISTORY', 'PROFILE', 'AGENT_MGMT', 'REPORTS'],
+    mustChangePassword: false,
+  },
+  AGENT001: {
+    password: 'agent123',
+    agentId: 'AGENT001',
+    agentName: 'Mariam Bougnar',
+    agentCode: 'HPS-AGT-001',
+    agentType: 'AGENT_PROPRE',
+    privileges: ['CASH_IN', 'CASH_OUT', 'TRANSFER', 'BILL_PAYMENT', 'CLIENT_MGMT', 'WALLET_MGMT', 'HISTORY', 'PROFILE'],
+    mustChangePassword: false,
+  },
+  BO001: {
+    password: 'agent123',
+    agentId: 'BO001',
+    agentName: 'Sara Alaoui',
+    agentCode: 'HPS-BO-001',
+    agentType: 'BACK_OFFICE',
+    privileges: ['CLIENT_MGMT', 'WALLET_MGMT', 'HISTORY', 'PROFILE'],
+    mustChangePassword: false,
+  },
+  MANDATE001: {
+    password: 'agent123',
+    agentId: 'MANDATE001',
+    agentName: 'Youssef Bennani',
+    agentCode: 'HPS-MND-001',
+    agentType: 'AGENT_MANDATE_PRINCIPAL',
+    privileges: ['CASH_IN', 'CASH_OUT', 'TRANSFER', 'CLIENT_MGMT', 'WALLET_MGMT', 'HISTORY', 'PROFILE'],
+    mustChangePassword: false,
+  },
+  COMMERCANT001: {
+    password: 'agent123',
+    agentId: 'COMMERCANT001',
+    agentName: 'Karim Berrada',
+    agentCode: 'HPS-COM-001',
+    agentType: 'AGENT_MANDATE_COMMERCANT',
+    privileges: ['CASH_IN', 'CASH_OUT', 'HISTORY', 'PROFILE'],
+    mustChangePassword: false,
+  },
+  DETAILLANT001: {
+    password: 'agent123',
+    agentId: 'DETAILLANT001',
+    agentName: 'Nadia Fassi Fihri',
+    agentCode: 'HPS-DET-001',
+    agentType: 'AGENT_MANDATE_DETAILLANT',
+    privileges: ['CASH_IN', 'CASH_OUT', 'HISTORY', 'PROFILE'],
+    mustChangePassword: false,
+  },
+  ALL001: {
+    password: 'all123',
+    agentId: 'ALL001',
+    agentName: 'Super Admin',
+    agentCode: 'HPS-ALL-001',
+    agentType: 'ALL',
+    privileges: ['CASH_IN', 'CASH_OUT', 'TRANSFER', 'BILL_PAYMENT', 'CLIENT_MGMT', 'WALLET_MGMT', 'HISTORY', 'PROFILE', 'AGENT_MGMT', 'REPORTS'],
+    mustChangePassword: false,
+  },
+  NEW001: {
+    password: 'Temp@1234',
+    agentId: 'NEW001',
+    agentName: 'Nouvel Agent Test',
+    agentCode: 'HPS-NEW-001',
+    agentType: 'AGENT_PROPRE',
+    privileges: ['CASH_IN', 'CASH_OUT', 'PROFILE'],
+    mustChangePassword: true,
+  },
+};
 
 // ── Fake Data ────────────────────────────────────────────────────────────────
 
@@ -18,12 +106,12 @@ const MOCK_CLIENTS: Client[] = [
 ];
 
 const MOCK_WALLETS: Wallet[] = [
-  { id: 1, walletId: 'W-100201', ownerName: 'Youssef Bennani', phone: '+212 661 234 567', email: 'youssef.bennani@mail.com', type: 'Personnel', status: 'Actif', balance: 4500, dailyLimit: 20000, monthlyLimit: 200000, transactionFee: 1.5, currency: 'MAD', kycVerified: true, notes: '' },
-  { id: 2, walletId: 'W-100202', ownerName: 'Fatima El Amrani', phone: '+212 662 345 678', email: 'fatima.amrani@mail.com', type: 'Personnel', status: 'Actif', balance: 12300, dailyLimit: 20000, monthlyLimit: 200000, transactionFee: 1.5, currency: 'MAD', kycVerified: true, notes: '' },
-  { id: 3, walletId: 'W-100203', ownerName: 'Mohamed Tazi', phone: '+212 663 456 789', email: 'mohamed.tazi@mail.com', type: 'Personnel', status: 'Actif', balance: 800, dailyLimit: 5000, monthlyLimit: 50000, transactionFee: 2.0, currency: 'MAD', kycVerified: false, notes: 'KYC en attente' },
-  { id: 4, walletId: 'W-100204', ownerName: 'Sara Alaoui', phone: '+212 664 567 890', email: 'sara.alaoui@mail.com', type: 'Marchand', status: 'Actif', balance: 7200, dailyLimit: 50000, monthlyLimit: 500000, transactionFee: 1.0, currency: 'MAD', kycVerified: true, notes: 'Compte marchand verifie' },
-  { id: 5, walletId: 'W-100205', ownerName: 'Karim Berrada', phone: '+212 665 678 901', email: 'karim.berrada@mail.com', type: 'Personnel', status: 'Suspendu', balance: 0, dailyLimit: 20000, monthlyLimit: 200000, transactionFee: 1.5, currency: 'MAD', kycVerified: true, notes: 'Suspendu pour verification' },
-  { id: 6, walletId: 'W-100206', ownerName: 'Nadia Fassi Fihri', phone: '+212 666 789 012', email: 'nadia.fassi@mail.com', type: 'Personnel', status: 'Actif', balance: 3100, dailyLimit: 20000, monthlyLimit: 200000, transactionFee: 1.5, currency: 'MAD', kycVerified: true, notes: '' },
+  { id: 1, walletId: 'W-100201', ownerName: 'Youssef Bennani', phone: '+212 661 234 567', email: 'youssef.bennani@mail.com', type: 'Niveau 1', status: 'Actif', balance: 4500, dailyLimit: 20000, monthlyLimit: 200000, transactionFee: 1.5, currency: 'MAD', kycVerified: true, notes: '' },
+  { id: 2, walletId: 'W-100202', ownerName: 'Fatima El Amrani', phone: '+212 662 345 678', email: 'fatima.amrani@mail.com', type: 'Niveau 1', status: 'Actif', balance: 12300, dailyLimit: 20000, monthlyLimit: 200000, transactionFee: 1.5, currency: 'MAD', kycVerified: true, notes: '' },
+  { id: 3, walletId: 'W-100203', ownerName: 'Mohamed Tazi', phone: '+212 663 456 789', email: 'mohamed.tazi@mail.com', type: 'Niveau 1', status: 'Actif', balance: 800, dailyLimit: 5000, monthlyLimit: 50000, transactionFee: 2.0, currency: 'MAD', kycVerified: false, notes: 'KYC en attente' },
+  { id: 4, walletId: 'W-100204', ownerName: 'Sara Alaoui', phone: '+212 664 567 890', email: 'sara.alaoui@mail.com', type: 'Niveau 2', status: 'Actif', balance: 7200, dailyLimit: 50000, monthlyLimit: 500000, transactionFee: 1.0, currency: 'MAD', kycVerified: true, notes: 'Compte niveau 2 verifie' },
+  { id: 5, walletId: 'W-100205', ownerName: 'Karim Berrada', phone: '+212 665 678 901', email: 'karim.berrada@mail.com', type: 'Niveau 1', status: 'Suspendu', balance: 0, dailyLimit: 20000, monthlyLimit: 200000, transactionFee: 1.5, currency: 'MAD', kycVerified: true, notes: 'Suspendu pour verification' },
+  { id: 6, walletId: 'W-100206', ownerName: 'Nadia Fassi Fihri', phone: '+212 666 789 012', email: 'nadia.fassi@mail.com', type: 'Niveau 3', status: 'Actif', balance: 3100, dailyLimit: 20000, monthlyLimit: 200000, transactionFee: 1.5, currency: 'MAD', kycVerified: true, notes: '' },
 ];
 
 const MOCK_ACCOUNTS: Account[] = [
@@ -68,7 +156,22 @@ const MOCK_STATS: DashboardStats = {
   commissionBalance: 3450,
   todayTransactionsCount: 47,
   agentName: 'Mariam Bougnar',
-  agentCode: 'HPS-AGT-1001'
+  agentCode: 'HPS-AGT-001',
+  // Transactions du jour
+  todayCashInCount: 18,
+  todayCashInAmount: 45200,
+  todayCashOutCount: 12,
+  todayCashOutAmount: 23100,
+  todayTransfersCount: 8,
+  todayBillPaymentsCount: 9,
+  // Gestion
+  activeClients: 1247,
+  totalWallets: 1832,
+  pendingTransactions: 5,
+  // Admin
+  totalAgents: 48,
+  totalVolume: 287450.75,
+  globalBalance: 1234567.89,
 };
 
 // ── Helper ───────────────────────────────────────────────────────────────────
@@ -78,7 +181,7 @@ function genId(): string {
 }
 
 function json<T>(body: T, statusCode = 200) {
-  return of(new HttpResponse({ status: statusCode, body })).pipe(delay(300 + Math.random() * 400));
+  return of(new HttpResponse({ status: statusCode, body })).pipe(delay(0));
 }
 
 // ── Interceptor ──────────────────────────────────────────────────────────────
@@ -92,18 +195,24 @@ export const mockApiInterceptor: HttpInterceptorFn = (req, next) => {
     return next(req);
   }
 
-  const path = url.split('localhost:8080')[1]?.split('?')[0] || '';
+  const rawPath = url.split('localhost:8080')[1]?.split('?')[0] || '';
+  // Supporte les deux : /agents et /api/agents (selon si apiUrl inclut /api ou pas)
+  const path = rawPath.startsWith('/api/') ? rawPath.slice(4) : rawPath;
   const params = new URL(url).searchParams;
 
   // ── AUTH ──────────────────────────────────────────────────────────────────
   if (path === '/auth/login' && method === 'POST') {
     const body = req.body as any;
-    if (body?.agentId && body?.password) {
+    const agent = MOCK_AGENTS[body?.agentId];
+    if (agent && agent.password === body?.password) {
       return json<LoginResponse>({
-        token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZ2VudElkIjoiQUdULTEwMDEiLCJuYW1lIjoiQWhtZWQgTW91c3Nhb3VpIiwiZXhwIjoxOTk5OTk5OTk5fQ.mock-signature',
-        agentId: 'AGT-1001',
-        agentName: 'Mariam Bougnar',
-        agentCode: 'HPS-AGT-1001'
+        token: `mock-token-${agent.agentId}-${Date.now()}`,
+        agentId: agent.agentId,
+        agentName: agent.agentName,
+        agentCode: agent.agentCode,
+        agentType: agent.agentType,
+        privileges: agent.privileges,
+        mustChangePassword: agent.mustChangePassword,
       });
     }
     return json({ message: 'Identifiant ou mot de passe incorrect' }, 401);
@@ -306,6 +415,114 @@ export const mockApiInterceptor: HttpInterceptorFn = (req, next) => {
     const data = filtered.slice(start, start + pageSize).map(toComponentFormat);
 
     return json({ data, total, page, pageSize, totalPages: Math.ceil(total / pageSize) });
+  }
+
+  // ── FORCE CHANGE PASSWORD ────────────────────────────────────────────────
+  if (path === '/auth/force-change-password' && method === 'POST') {
+    const authHeader = req.headers.get('Authorization') || '';
+    const tokenPart = authHeader.replace('Bearer ', '');
+    // Token format: mock-token-{agentId}-{timestamp}
+    const agentId = tokenPart.split('-').slice(2, -1).join('-');
+    const agent = MOCK_AGENTS[agentId];
+    if (agent) {
+      agent.mustChangePassword = false;
+    }
+    return json({ message: 'Password changed successfully' });
+  }
+
+  // ── ADMIN USERS ──────────────────────────────────────────────────────────
+  if (path === '/admin/commissions' && method === 'GET') {
+    return json([{ id: 1, label: '2%' }, { id: 2, label: '5%' }, { id: 3, label: '10%' }]);
+  }
+  if (path === '/admin/profiles' && method === 'GET') {
+    return json([
+      { name: 'Administrateur',        value: 'ADMIN' },
+      { name: 'Back Office',           value: 'BACK_OFFICE' },
+      { name: 'Agent Propre',          value: 'AGENT_PROPRE' },
+      { name: 'Mandaté Principal',     value: 'AGENT_MANDATE_PRINCIPAL' },
+      { name: 'Mandaté Commerçant',    value: 'AGENT_MANDATE_COMMERCANT' },
+      { name: 'Mandaté Détaillant',    value: 'AGENT_MANDATE_DETAILLANT' },
+      { name: 'Tous les privilèges',   value: 'ALL' },
+    ]);
+  }
+  if (path === '/admin/users' && method === 'GET') {
+    const search = params.get('search')?.toLowerCase() || '';
+    const status = params.get('status') || '';
+    let list = Object.values(MOCK_AGENTS).map((a, idx) => ({
+      id: idx + 1,
+      identifiant: a.agentId,
+      firstName: a.agentName.split(' ')[0],
+      lastName: a.agentName.split(' ').slice(1).join(' '),
+      email: `${a.agentId.toLowerCase()}@hps-agent.ma`,
+      phone: '+212 600 000 00' + idx,
+      idType: 'CIN',
+      idNumber: 'AB' + (100000 + idx),
+      commission: '2%',
+      rib: '007 780 000000000' + idx,
+      status: (a.mustChangePassword ? 'ACTIVE' : 'ACTIVE') as 'ACTIVE' | 'INACTIVE' | 'LOCKED',
+      agentType: a.agentType,
+      privileges: a.privileges,
+    }));
+    if (search) list = list.filter(u => u.identifiant.toLowerCase().includes(search) || u.firstName.toLowerCase().includes(search) || u.lastName.toLowerCase().includes(search));
+    if (status) list = list.filter(u => u.status === status);
+    return json(list);
+  }
+  if (path.match(/^\/admin\/users\/\d+$/) && method === 'PUT') {
+    return json({ message: 'OK' });
+  }
+  if (path.match(/^\/admin\/users\/\d+\/lock$/) && method === 'PUT') {
+    return json({ message: 'OK' });
+  }
+  if (path.match(/^\/admin\/users\/\d+\/privileges$/) && method === 'PUT') {
+    return json({ message: 'OK' });
+  }
+  if (path.match(/^\/admin\/users\/\d+\/profile$/) && method === 'PUT') {
+    return json({ message: 'OK' });
+  }
+  if (path.match(/^\/admin\/users\/\d+\/contract$/) && method === 'PUT') {
+    return json({ message: 'OK' });
+  }
+  if (path.match(/^\/admin\/users\/\d+\/address$/) && method === 'PUT') {
+    return json({ message: 'OK' });
+  }
+  if (path.match(/^\/admin\/users\/\d+$/) && method === 'DELETE') {
+    return json({ message: 'OK' });
+  }
+
+  // ── AGENTS ─────────────────────────────────────────────────────────────
+  if (path === '/agents' && method === 'POST') {
+    const body = req.body as any;
+
+    if (body.identifiant === 'ADMIN001' || body.identifiant === 'ALL001') {
+      return throwError(() => ({
+        status: 409,
+        error: { error: 'IDENTIFIANT_ALREADY_EXISTS', message: 'Cet identifiant est déjà utilisé' }
+      }));
+    }
+
+    if (body.email === 'admin@portailagent.ma') {
+      return throwError(() => ({
+        status: 409,
+        error: { error: 'EMAIL_ALREADY_EXISTS', message: 'Cet email est déjà associé à un compte' }
+      }));
+    }
+
+    const agent: CreatedAgent = {
+      id: Math.floor(1000 + Math.random() * 9000),
+      identifiant: body.identifiant || 'PR-000000',
+      firstName: body.firstName || '',
+      lastName: body.lastName || '',
+      agentType: body.agentType || '',
+      email: body.email || '',
+      phone: body.phone || '',
+      status: 'Actif',
+      createdAt: new Date().toISOString(),
+      otpChannel: body.otpChannel || 'EMAIL'
+    };
+    return json({ message: 'Agent created successfully', agent }, 201);
+  }
+  if (path === '/agents' && method === 'GET') {
+    return json<CreatedAgent[]>([]);
   }
 
   // ── Fallback: pass through ───────────────────────────────────────────────
