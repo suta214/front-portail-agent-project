@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { AuthService } from '../../core/services/auth.service';
+import { finalize, timeout } from 'rxjs/operators';
 
 @Component({
   standalone: true,
@@ -239,16 +240,19 @@ export class ForceChangePasswordComponent {
     this.http.post(
       `${environment.apiUrl}/auth/force-change-password`,
       { currentPassword: this.currentPassword, newPassword: this.newPassword },
+    ).pipe(
+      timeout(20000),
+      finalize(() => this.isSubmitting = false)
     ).subscribe({
       next: () => {
-        this.isSubmitting = false;
         localStorage.setItem('mustChangePassword', 'false');
         this.successMsg = 'Mot de passe changé avec succès !';
         setTimeout(() => this.router.navigate(['/dashboard']), 1000);
       },
-      error: () => {
-        this.isSubmitting = false;
-        this.errorMsg = 'Le mot de passe actuel est incorrect.';
+      error: (err) => {
+        this.errorMsg = err?.name === 'TimeoutError'
+          ? 'Le serveur ne répond pas. Réessayez.'
+          : 'Le mot de passe actuel est incorrect.';
       }
     });
   }

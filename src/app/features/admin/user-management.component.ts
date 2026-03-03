@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { AdminUser, AgentType, Privilege } from '../../core/models';
+import { finalize, timeout } from 'rxjs/operators';
 
 interface Commission { id: number; label: string; }
 interface ProfileOption { name: string; status: string; value: AgentType; }
@@ -534,9 +535,11 @@ export class UserManagementComponent implements OnInit {
     if (this.searchQuery) params['search'] = this.searchQuery;
     if (this.searchStatus) params['status'] = this.searchStatus;
 
-    this.http.get<any>(`${environment.apiUrl}/admin/users`, { params }).subscribe({
+    this.http.get<any>(`${environment.apiUrl}/admin/users`, { params }).pipe(
+      timeout(20000),
+      finalize(() => this.loading = false)
+    ).subscribe({
       next: (res) => {
-        this.loading = false;
         if (Array.isArray(res)) {
           this.users = res;
           this.totalResults = res.length;
@@ -546,7 +549,6 @@ export class UserManagementComponent implements OnInit {
         }
       },
       error: () => {
-        this.loading = false;
         this.errorMsg = 'Erreur lors de la recherche';
         setTimeout(() => this.errorMsg = '', 3000);
       }

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { WalletService } from '../../core/services/wallet.service';
 import { TranslationService } from '../../core/services/translation.service';
+import { finalize, timeout } from 'rxjs/operators';
 
 @Component({
   standalone: true,
@@ -1196,9 +1197,12 @@ export class WalletsManagementComponent implements OnInit {
     if (!this.newWalletForm.ownerName || !this.newWalletForm.phone || !this.newWalletForm.dailyLimit) {
       this.errorMessage = 'Veuillez remplir tous les champs obligatoires'; return;
     }
-    this.walletService.createWallet(this.newWalletForm).subscribe({
+    this.walletService.createWallet(this.newWalletForm).pipe(
+      timeout(20000),
+      finalize(() => {})
+    ).subscribe({
       next: (w) => { this.wallets.unshift(w); this.successMessage = `Wallet cree: ${w.walletId}`; this.errorMessage = ''; this.closeCreateWallet(); },
-      error: (err) => (this.errorMessage = err?.error?.message || 'Erreur lors de la creation du wallet')
+      error: (err) => (this.errorMessage = err?.name === 'TimeoutError' ? 'Le serveur ne répond pas. Réessayez.' : err?.error?.message || 'Erreur lors de la creation du wallet')
     });
   }
 
@@ -1208,9 +1212,12 @@ export class WalletsManagementComponent implements OnInit {
   closeManageWallet() { this.manageWalletOpen = false; this.selectedWallet = null; }
 
   updateWallet() {
-    this.walletService.updateWallet(this.selectedWallet.id, { dailyLimit: this.selectedWallet.dailyLimit, monthlyLimit: this.selectedWallet.monthlyLimit, transactionFee: this.walletFee, notes: this.walletNotes }).subscribe({
+    this.walletService.updateWallet(this.selectedWallet.id, { dailyLimit: this.selectedWallet.dailyLimit, monthlyLimit: this.selectedWallet.monthlyLimit, transactionFee: this.walletFee, notes: this.walletNotes }).pipe(
+      timeout(20000),
+      finalize(() => {})
+    ).subscribe({
       next: () => { this.successMessage = `Wallet ${this.selectedWallet.walletId} mis a jour`; this.errorMessage = ''; this.closeManageWallet(); this.loadWallets(); },
-      error: (err) => (this.errorMessage = err?.error?.message || 'Erreur lors de la mise a jour')
+      error: (err) => (this.errorMessage = err?.name === 'TimeoutError' ? 'Le serveur ne répond pas. Réessayez.' : err?.error?.message || 'Erreur lors de la mise a jour')
     });
   }
 
@@ -1220,9 +1227,12 @@ export class WalletsManagementComponent implements OnInit {
   applyWalletAction() {
     if (!this.walletActionType || !this.walletActionReason) { this.errorMessage = 'Veuillez selectionner une action et indiquer le motif'; return; }
     if ((this.walletActionType === 'credit' || this.walletActionType === 'debit') && this.walletActionAmount <= 0) { this.errorMessage = 'Montant invalide'; return; }
-    this.walletService.applyAction(this.selectedWallet.id, { action: this.walletActionType as any, amount: this.walletActionAmount, reason: this.walletActionReason }).subscribe({
+    this.walletService.applyAction(this.selectedWallet.id, { action: this.walletActionType as any, amount: this.walletActionAmount, reason: this.walletActionReason }).pipe(
+      timeout(20000),
+      finalize(() => {})
+    ).subscribe({
       next: (res) => { this.successMessage = res.message || `Action appliquee au wallet ${this.selectedWallet.walletId}`; this.errorMessage = ''; this.closeWalletActions(); this.loadWallets(); },
-      error: (err) => (this.errorMessage = err?.error?.message || 'Erreur lors de l\'action')
+      error: (err) => (this.errorMessage = err?.name === 'TimeoutError' ? 'Le serveur ne répond pas. Réessayez.' : err?.error?.message || 'Erreur lors de l\'action')
     });
   }
 

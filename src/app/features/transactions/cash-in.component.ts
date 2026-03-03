@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ClientService } from '../../core/services/client.service';
 import { TransactionService } from '../../core/services/transaction.service';
+import { finalize, timeout } from 'rxjs/operators';
 
 @Component({
   standalone: true,
@@ -234,7 +235,7 @@ import { TransactionService } from '../../core/services/transaction.service';
           <div class="form-col">
             <div class="form-group">
               <label class="form-label">Identifiant du compte</label>
-              <input [value]="selectedAccount?.id || ''" readonly class="form-input form-input--readonly" />
+              <input [value]="selectedAccount?.accountId || ''" readonly class="form-input form-input--readonly" />
             </div>
 
             <div class="form-group">
@@ -704,6 +705,8 @@ export class CashInComponent {
       next: (client) => {
         this.lastName = client.lastName;
         this.firstName = client.firstName;
+        this.idNumber = client.cin ?? '';
+        this.walletId = client.walletId ?? '';
         this.loadAccounts();
       },
       error: (err) => (this.errorMsg = err?.error?.message || 'Client introuvable')
@@ -737,13 +740,19 @@ export class CashInComponent {
     if (!this.canSubmit()) { this.errorMsg = 'Sélectionnez un compte et saisissez un montant'; return; }
     this.isLoading = true;
     this.errorMsg = '';
-    this.transactionService.cashIn({ accountId: this.selectedAccount.accountId, amount: this.amount, fees: this.fee, clientPhone: this.phone }).subscribe({
+    this.transactionService.cashIn({ accountId: this.selectedAccount.accountId, cardNumber: this.walletId, amount: this.amount, fees: this.fee, clientPhone: this.phone }).pipe(
+      timeout(20000),
+      finalize(() => this.isLoading = false)
+    ).subscribe({
       next: (res) => {
-        this.isLoading = false;
         this.successMsg = `Transaction validée — Réf: ${res.transactionId}`;
         this.clearTransaction();
       },
-      error: (err) => { this.isLoading = false; this.errorMsg = err?.error?.message || 'Erreur lors de la transaction'; }
+      error: (err) => {
+        this.errorMsg = err?.name === 'TimeoutError'
+          ? 'Le serveur ne répond pas. Réessayez.'
+          : err?.error?.message || 'Erreur lors de la transaction';
+      }
     });
   }
 

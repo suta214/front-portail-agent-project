@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ClientService } from '../../core/services/client.service';
 import { TranslationService } from '../../core/services/translation.service';
+import { finalize, timeout } from 'rxjs/operators';
 
 @Component({
   standalone: true,
@@ -1121,9 +1122,11 @@ export class ClientsManagementComponent implements OnInit {
       idNumber: this.form.idNumber,
       idIssueDate: this.form.idIssueDate,
       idExpiryDate: this.form.idExpiryDate
-    }).subscribe({
+    }).pipe(
+      timeout(20000),
+      finalize(() => this.isLoading = false)
+    ).subscribe({
       next: (client) => {
-        this.isLoading = false;
         this.clients.unshift(client);
         this.successMsg = `Client enrole avec succes ! Wallet: ${client.walletId}`;
         this.form = { name:'', firstName:'', dob:'', birthPlace:'', nationality:'TN', gender:'M', cin:'', phone:'', email:'', address:'', city:'', idType:'', idNumber:'', idIssueDate:'', idExpiryDate:'' };
@@ -1131,8 +1134,9 @@ export class ClientsManagementComponent implements OnInit {
         this.enrollOpen = false;
       },
       error: (err) => {
-        this.isLoading = false;
-        this.errorMsg = err?.error?.message || 'Erreur lors de l\'enrolement du client';
+        this.errorMsg = err?.name === 'TimeoutError'
+          ? 'Le serveur ne répond pas. Réessayez.'
+          : err?.error?.message || 'Erreur lors de l\'enrolement du client';
       }
     });
   }

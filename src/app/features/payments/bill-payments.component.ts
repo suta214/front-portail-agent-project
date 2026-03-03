@@ -5,6 +5,7 @@ import { RouterModule } from '@angular/router';
 import { BillPaymentService } from '../../core/services/bill-payment.service';
 import { TranslationService } from '../../core/services/translation.service';
 import { Invoice } from '../../core/models';
+import { finalize, timeout } from 'rxjs/operators';
 
 @Component({
   standalone: true,
@@ -831,13 +832,19 @@ export class BillPaymentsComponent {
     if (!this.customerRef && !this.contractNumber) { this.errorMsg = 'Saisissez une reference client ou numero de contrat'; return; }
     this.errorMsg = '';
     this.isLoading = true;
-    this.billPaymentService.getInvoice(this.selectedBiller.key, this.customerRef, this.contractNumber).subscribe({
+    this.billPaymentService.getInvoice(this.selectedBiller.key, this.customerRef, this.contractNumber).pipe(
+      timeout(20000),
+      finalize(() => this.isLoading = false)
+    ).subscribe({
       next: (inv) => {
-        this.isLoading = false;
         this.invoice = inv;
         this.fee = Math.round(inv.amount * 0.01 * 100) / 100;
       },
-      error: (err) => { this.isLoading = false; this.errorMsg = err?.error?.message || 'Aucune facture trouvee'; }
+      error: (err) => {
+        this.errorMsg = err?.name === 'TimeoutError'
+          ? 'Le serveur ne répond pas. Réessayez.'
+          : err?.error?.message || 'Aucune facture trouvee';
+      }
     });
   }
 
@@ -845,9 +852,11 @@ export class BillPaymentsComponent {
     if (!this.invoice) { this.errorMsg = 'Aucune facture a payer'; return; }
     this.isLoading = true;
     this.errorMsg = '';
-    this.billPaymentService.payBill({ billerId: this.selectedBiller.key, customerRef: this.customerRef, contractNumber: this.contractNumber, amount: this.invoice.amount, fees: this.fee }).subscribe({
+    this.billPaymentService.payBill({ billerId: this.selectedBiller.key, customerRef: this.customerRef, contractNumber: this.contractNumber, amount: this.invoice.amount, fees: this.fee }).pipe(
+      timeout(20000),
+      finalize(() => this.isLoading = false)
+    ).subscribe({
       next: (res) => {
-        this.isLoading = false;
         this.successMsg = `Paiement valide — Ref: ${res.transactionId}`;
         this.recentPayments.unshift({
           id: Date.now(),
@@ -858,7 +867,11 @@ export class BillPaymentsComponent {
         this.invoice = null;
         this.selectedBiller = null;
       },
-      error: (err) => { this.isLoading = false; this.errorMsg = err?.error?.message || 'Erreur lors du paiement'; }
+      error: (err) => {
+        this.errorMsg = err?.name === 'TimeoutError'
+          ? 'Le serveur ne répond pas. Réessayez.'
+          : err?.error?.message || 'Erreur lors du paiement';
+      }
     });
   }
 

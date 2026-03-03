@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ProfileService } from '../../core/services/profile.service';
 import { AuthService } from '../../core/services/auth.service';
 import { TranslationService } from '../../core/services/translation.service';
+import { finalize, timeout } from 'rxjs/operators';
 
 @Component({
   standalone: true,
@@ -90,6 +91,31 @@ import { TranslationService } from '../../core/services/translation.service';
             </div>
           </form>
         </div>
+
+        <!-- Fonctionnalités accordées -->
+        @if (agentFeatures.length > 0) {
+          <div class="settings-card">
+            <div class="card-header">
+              <div class="card-header-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <polyline points="9 11 12 14 22 4" stroke="var(--hps-orange)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" stroke="var(--hps-orange)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <h3>Fonctionnalités accordées</h3>
+            </div>
+            <div class="card-body">
+              <div class="features-badges">
+                @for (f of agentFeatures; track f) {
+                  <span class="feature-badge">
+                    <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.5 3.5 6.5-8"/></svg>
+                    {{ f }}
+                  </span>
+                }
+              </div>
+            </div>
+          </div>
+        }
 
         <!-- Security Settings -->
         <div class="settings-card">
@@ -544,6 +570,25 @@ import { TranslationService } from '../../core/services/translation.service';
       background: rgba(232, 71, 27, 0.04);
     }
 
+    /* ---- Feature Badges ---- */
+    .features-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .feature-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background: rgba(34, 197, 94, 0.08);
+      border: 1.5px solid rgba(34, 197, 94, 0.3);
+      border-radius: var(--radius-full);
+      color: #16a34a;
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+
     /* ---- Logout ---- */
     .logout-section {
       margin-top: 4px;
@@ -615,9 +660,12 @@ export class AgentProfileComponent implements OnInit {
   savePersonalInfo() {
     if (!this.fullName || !this.email || !this.phone) { this.errorMessage = this.ts.t('fillAll'); return; }
     this.isLoading = true; this.errorMessage = '';
-    this.profileService.updateProfile({ fullName: this.fullName, email: this.email, phone: this.phone }).subscribe({
-      next: () => { this.isLoading = false; this.successMessage = this.ts.t('infoUpdated'); },
-      error: (err) => { this.isLoading = false; this.errorMessage = err?.error?.message || this.ts.t('updateErr'); }
+    this.profileService.updateProfile({ fullName: this.fullName, email: this.email, phone: this.phone }).pipe(
+      timeout(20000),
+      finalize(() => this.isLoading = false)
+    ).subscribe({
+      next: () => { this.successMessage = this.ts.t('infoUpdated'); },
+      error: (err) => { this.errorMessage = err?.name === 'TimeoutError' ? 'Le serveur ne répond pas. Réessayez.' : err?.error?.message || this.ts.t('updateErr'); }
     });
   }
 
@@ -626,9 +674,12 @@ export class AgentProfileComponent implements OnInit {
     if (this.newPassword !== this.confirmPassword) { this.errorMessage = this.ts.t('pwdMismatch'); return; }
     if (this.newPassword.length < 8) { this.errorMessage = this.ts.t('pwdMin8'); return; }
     this.isLoading = true; this.errorMessage = '';
-    this.profileService.changePassword({ currentPassword: this.currentPassword, newPassword: this.newPassword }).subscribe({
-      next: () => { this.isLoading = false; this.successMessage = this.ts.t('pwdChanged'); this.currentPassword = ''; this.newPassword = ''; this.confirmPassword = ''; },
-      error: (err) => { this.isLoading = false; this.errorMessage = err?.error?.message || this.ts.t('changeErr'); }
+    this.profileService.changePassword({ currentPassword: this.currentPassword, newPassword: this.newPassword }).pipe(
+      timeout(20000),
+      finalize(() => this.isLoading = false)
+    ).subscribe({
+      next: () => { this.successMessage = this.ts.t('pwdChanged'); this.currentPassword = ''; this.newPassword = ''; this.confirmPassword = ''; },
+      error: (err) => { this.errorMessage = err?.name === 'TimeoutError' ? 'Le serveur ne répond pas. Réessayez.' : err?.error?.message || this.ts.t('changeErr'); }
     });
   }
 
@@ -647,10 +698,17 @@ export class AgentProfileComponent implements OnInit {
 
   saveOtherSettings() {
     this.isLoading = true; this.errorMessage = '';
-    this.profileService.updateSettings({ notificationsEnabled: this.notificationsEnabled, twoFactorEnabled: this.twoFactorEnabled, timezone: this.timezone }).subscribe({
-      next: () => { this.isLoading = false; this.successMessage = this.ts.t('settingsSaved'); },
-      error: (err) => { this.isLoading = false; this.errorMessage = err?.error?.message || this.ts.t('error'); }
+    this.profileService.updateSettings({ notificationsEnabled: this.notificationsEnabled, twoFactorEnabled: this.twoFactorEnabled, timezone: this.timezone }).pipe(
+      timeout(20000),
+      finalize(() => this.isLoading = false)
+    ).subscribe({
+      next: () => { this.successMessage = this.ts.t('settingsSaved'); },
+      error: (err) => { this.errorMessage = err?.name === 'TimeoutError' ? 'Le serveur ne répond pas. Réessayez.' : err?.error?.message || this.ts.t('error'); }
     });
+  }
+
+  get agentFeatures(): string[] {
+    return this.authService.getAgentInfo()?.features ?? [];
   }
 
   logout() { this.authService.logout(); }

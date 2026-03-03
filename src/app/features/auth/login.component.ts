@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
+import { finalize, timeout } from 'rxjs/operators';
 
 @Component({
   standalone: true,
@@ -628,14 +629,19 @@ export class LoginComponent {
     if (!this.agentId || !this.password) return;
     this.isLoading = true;
     this.errorMsg = '';
-    this.authService.login({ agentId: this.agentId, password: this.password }).subscribe({
+    this.authService.login({ agentId: this.agentId, password: this.password }).pipe(
+      timeout(20000),
+      finalize(() => this.isLoading = false)
+    ).subscribe({
       next: () => {
-        this.isLoading = false;
         this.router.navigate(['/dashboard']);
       },
       error: (err) => {
-        this.isLoading = false;
-        this.errorMsg = err?.error?.message || 'Identifiant ou mot de passe incorrect';
+        if (err?.name === 'TimeoutError') {
+          this.errorMsg = 'Le serveur ne répond pas. Réessayez.';
+        } else {
+          this.errorMsg = err?.error?.message || 'Identifiant ou mot de passe incorrect';
+        }
       }
     });
   }

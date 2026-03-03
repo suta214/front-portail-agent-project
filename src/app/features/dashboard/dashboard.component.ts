@@ -553,7 +553,7 @@ import { DashboardStats } from '../../core/models';
         <h3 class="section-title">Accès rapide</h3>
         <div class="quick-actions-grid">
 
-          @if (ps.has('CASH_IN')) {
+          @if (ps.has('CASH_IN') && !ps.isAdmin()) {
             <button class="quick-action-btn" (click)="router.navigate(['/cash-in'])">
               <div class="quick-action-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
@@ -567,7 +567,7 @@ import { DashboardStats } from '../../core/models';
             </button>
           }
 
-          @if (ps.has('CASH_OUT')) {
+          @if (ps.has('CASH_OUT') && !ps.isAdmin()) {
             <button class="quick-action-btn" (click)="router.navigate(['/cash-out'])">
               <div class="quick-action-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
@@ -581,7 +581,7 @@ import { DashboardStats } from '../../core/models';
             </button>
           }
 
-          @if (ps.has('TRANSFER')) {
+          @if (ps.has('TRANSFER') && !ps.isAdmin()) {
             <button class="quick-action-btn" (click)="router.navigate(['/assisted-transfers'])">
               <div class="quick-action-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
@@ -596,7 +596,7 @@ import { DashboardStats } from '../../core/models';
             </button>
           }
 
-          @if (ps.has('BILL_PAYMENT')) {
+          @if (ps.has('BILL_PAYMENT') && !ps.isAdmin()) {
             <button class="quick-action-btn" (click)="router.navigate(['/bill-payments'])">
               <div class="quick-action-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
@@ -637,7 +637,7 @@ import { DashboardStats } from '../../core/models';
             </button>
           }
 
-          @if (ps.has('HISTORY')) {
+          @if (ps.has('HISTORY') && !ps.isAdmin()) {
             <button class="quick-action-btn" (click)="router.navigate(['/history'])">
               <div class="quick-action-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"

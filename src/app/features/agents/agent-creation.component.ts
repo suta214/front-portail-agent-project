@@ -888,7 +888,7 @@ export class AgentCreationComponent implements OnInit {
 
     const body = {
       ...this.form,
-      features: this.features
+      features: this.features.map(key => FEATURES.find(f => f.key === key)?.label ?? key)
     };
 
     this.agentService.createAgent(body).pipe(

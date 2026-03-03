@@ -11,6 +11,7 @@ export interface LoginResponse {
   agentCode: string;
   agentType: string;
   privileges: string[];
+  features: string[];
   mustChangePassword: boolean;
 }
 
@@ -174,6 +175,7 @@ export interface Account {
 // ── Transaction (Cash In / Cash Out) ──────────────────────────────────────────
 export interface CashInRequest {
   accountId: string;
+  cardNumber?: string;
   amount: number;
   fees: number;
   clientPhone: string;
@@ -181,6 +183,7 @@ export interface CashInRequest {
 
 export interface CashOutRequest {
   accountId: string;
+  cardNumber?: string;
   amount: number;
   fees: number;
   clientPhone: string;
@@ -281,6 +284,7 @@ export interface CreateAgentRequest {
   email: string;
   emailConfirmation: string;
   phone: string;
+  otpChannel?: 'EMAIL' | 'SMS';
   contractType: string;
   patentNumber: string;
   contractDate: string;

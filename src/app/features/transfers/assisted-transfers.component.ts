@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { TransferService } from '../../core/services/transfer.service';
 import { TranslationService } from '../../core/services/translation.service';
+import { finalize, timeout } from 'rxjs/operators';
 
 @Component({
   standalone: true,
@@ -167,13 +168,19 @@ export class AssistedTransfersComponent {
       amount: this.amount,
       fees: this.fee,
       reason: this.reason
-    }).subscribe({
+    }).pipe(
+      timeout(20000),
+      finalize(() => this.isLoading = false)
+    ).subscribe({
       next: (res) => {
-        this.isLoading = false;
         this.successMsg = `Transfert initié — Réf: ${res.transactionId}`;
         this.step = 3;
       },
-      error: (err) => { this.isLoading = false; this.errorMsg = err?.error?.message || 'Erreur lors du transfert'; }
+      error: (err) => {
+        this.errorMsg = err?.name === 'TimeoutError'
+          ? 'Le serveur ne répond pas. Réessayez.'
+          : err?.error?.message || 'Erreur lors du transfert';
+      }
     });
   }
 

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HistoryService } from '../../core/services/history.service';
 import { TranslationService } from '../../core/services/translation.service';
+import { finalize, timeout } from 'rxjs/operators';
 
 @Component({
   standalone: true,
@@ -535,14 +536,16 @@ export class HistoryComponent implements OnInit {
       dateRange: this.dateRange,
       page: this.currentPage,
       search: this.searchQuery || undefined
-    }).subscribe({
+    }).pipe(
+      timeout(20000),
+      finalize(() => this.isLoading = false)
+    ).subscribe({
       next: (res: any) => {
-        this.isLoading = false;
         this.transactions = res.data ?? res.items ?? res;
         this.totalPages = res.totalPages ?? (Math.ceil((res.total ?? this.transactions.length) / 10) || 1);
         this.currentPage = res.page ?? this.currentPage;
       },
-      error: () => { this.isLoading = false; this.errorMsg = 'Impossible de charger l\'historique'; }
+      error: () => { this.errorMsg = 'Impossible de charger l\'historique'; }
     });
   }
 
